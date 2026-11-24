@@ -233,7 +233,16 @@ h2, h3, h4, p { margin: 0; }
   width: 45px;
   height: 45px;
   margin-top: -22px;
+  display: flex;
+  align-items: center;      /* centers the arrow vertically */
+  justify-content: center;  /* centers the arrow horizontally */
+  border-radius: 50%;       /* makes the button a circle */
+  background: #fff;
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.25);
 }
+.carousel__btn img { width: 12px; height: 20px; }
+.carousel__btn--next img {transform: rotate(180deg);}
+
 .carousel__btn--prev { left: -15px; }
 .carousel__btn--next { right: -15px; }
 
@@ -317,8 +326,9 @@ h2, h3, h4, p { margin: 0; }
 .reviews__track {
   display: flex;
   gap: 15px;
-  padding: 10px;            /* room for card shadows */
+  padding: 10px;
   margin-inline: -10px;
+  scroll-padding-inline: 10px;
   overflow-x: auto;
   scroll-snap-type: x proximity;
   scrollbar-width: none;
@@ -354,20 +364,48 @@ h2, h3, h4, p { margin: 0; }
   text-overflow: ellipsis;
 }
 .review__meta {
-  display: flex;
-  align-items: center;
-  gap: 2px;
   margin-top: 2px;
   font-size: 8px;
   line-height: 1.2;
   color: #000;
   white-space: nowrap;
 }
-.review__meta img { width: 5px; height: 5px; flex: none; }
+.review__meta img {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  vertical-align: -1px;
+  margin-right: 1px;
+}
 .review__date { font-weight: 200; font-size: 7px; }
-.review__stars { margin-top: 4px; width: 44px; height: 8px; }
+
+.rating {
+  --size: 12px;
+  position: relative;
+  width: calc(var(--size) * 5);      /* five stars wide */
+  height: var(--size);
+}
+.rating::before,
+.rating::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: url("../Images/star.svg") repeat-x left center / var(--size) var(--size);
+}
+.rating::before {                    /* empty stars */
+  width: 100%;
+  filter: grayscale(1);
+  opacity: 0.3;
+}
+.rating::after {                     /* filled stars */
+  width: calc(var(--rating) / 5 * 100%);
+}
+.review .rating { margin-top: 6px; }
+
 .review__text {
-  margin-top: 12px;
+  margin-top: 10px;
   font-weight: 300;
   font-size: 11px;
   line-height: 1.35;
