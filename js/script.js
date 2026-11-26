@@ -16,4 +16,10 @@ document.addEventListener('DOMContentLoaded', function () {
       track.scrollBy({ left: step(), behavior: 'smooth' });
     });
   });
+  var header = document.querySelector('.header');
+  window.addEventListener('scroll', function () {
+  var y = window.scrollY;
+  // hide after scrolling down past 120px, show again on any scroll up
+  header.classList.toggle('header--hidden', y > 100);
+}, { passive: true });
 });
