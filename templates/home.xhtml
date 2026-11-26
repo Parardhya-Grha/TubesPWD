@@ -1,0 +1,33 @@
+<?php
+// home.xhtml - the homepage content. index.php prepares these variables:
+//   $categories, $popular, $newest, $reviews
+?>
+  <div class="container">
+
+    <!-- HERO -->
+    <div class="hero">
+      <img class="hero__img" src="<?= ASSET['hero'] ?>" alt="" />
+      <img class="hero__dots" src="<?= ASSET['hero_dots'] ?>" alt="" width="63" height="8" />
+    </div>
+
+    <!-- CATEGORIES -->
+    <div class="categories">
+<?php foreach ($categories as $c) { ?>
+      <a class="category" href="product.php?cat=<?= e(urlencode($c['slug_kategori'])) ?>"><img src="<?= e(img_path($c['icon_url'])) ?>" alt="" /><span><?= e($c['nama_kategori']) ?></span></a>
+<?php } ?>
+    </div>
+
+    <!-- PRODUK POPULER / TERBARU -->
+<?php print_carousel('PRODUK POPULER', 'popular', $popular); ?>
+<?php print_carousel('PRODUK TERBARU', 'newest', $newest); ?>
+
+    <!-- REVIEW -->
+    <div class="reviews">
+      <h2 class="section-title">REVIEW</h2>
+      <div class="reviews__track">
+<?php foreach ($reviews as $r) { print_review($r); } ?>
+      </div>
+    </div>
+
+  </div>
+

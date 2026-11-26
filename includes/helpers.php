@@ -1,237 +1,304 @@
 <?php
+// helpers.php - small functions that the pages share.
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/db.php';
 
-if (session_status() === PHP_SESSION_NONE) {
-    session_set_cookie_params(['httponly' => true, 'samesite' => 'Lax']);
-    session_start();
-}
+session_start();   // lets us remember things between page loads (cart message, security token)
 
-/* ------------------------------------------------------------------ *
- * Listing options (labels shown in the dropdowns)
- * ------------------------------------------------------------------ */
-const SORTS = [
+/* ---------- Fixed lists used by the filters ---------- */
+
+// 'value in the URL' => ['label shown to the visitor', 'SQL used for ORDER BY']
+$SORTS = [
     'newest'     => ['Newest',        'p.created_at DESC, p.id_product DESC'],
     'popular'    => ['Most Popular',  'p.total_disewa DESC, p.id_product ASC'],
     'price_asc'  => ['Lowest Price',  'p.harga_per_hari ASC, p.id_product ASC'],
     'price_desc' => ['Highest Price', 'p.harga_per_hari DESC, p.id_product ASC'],
 ];
 
-/** key => [label, min, max]  (null = no limit) */
-const PRICE_RANGES = [
-    '0-15000'     => ['Up to Rp 15.000',      0,     15000],
-    '15001-30000' => ['Rp 15.000 – 30.000',   15001, 30000],
-    '30001-45000' => ['Rp 30.000 – 45.000',   30001, 45000],
-    '45001-'      => ['Above Rp 45.000',      45001, null],
+// 'value in the URL' => ['label', lowest price, highest price]  (0 = no limit)
+$PRICE_RANGES = [
+    '0-15000'     => ['Up to Rp 15.000',     0,     15000],
+    '15001-30000' => ['Rp 15.000 – 30.000',  15001, 30000],
+    '30001-45000' => ['Rp 30.000 – 45.000',  30001, 45000],
+    '45001-'      => ['Above Rp 45.000',     45001, 0],
 ];
 
-const AVAILABILITY = [
+$AVAILABILITY = [
     'in_stock'  => 'In stock',
     'low_stock' => 'Low stock (5 or fewer)',
 ];
 
-/** Total stock of all variants of a product (variants are not selectable in the UI). */
-const STOCK_EXPR = '(SELECT COALESCE(SUM(v.stok_tersedia), 0) FROM product_variants v WHERE v.id_product = p.id_product)';
+// SQL piece that adds up the stock of all colours of one product
+$STOCK_SQL = '(SELECT COALESCE(SUM(v.stok_tersedia), 0) FROM product_variants v WHERE v.id_product = p.id_product)';
 
-/* ------------------------------------------------------------------ *
- * Small output helpers
- * ------------------------------------------------------------------ */
-function e($value): string
+/* ---------- Small text helpers ---------- */
+
+// e() = "escape". Always wrap database/user text in it before printing to HTML.
+// It turns < > & " into safe codes so nobody can inject a script into your page.
+function e($text)
 {
-    return htmlspecialchars((string) $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    return htmlspecialchars((string) $text, ENT_QUOTES, 'UTF-8');
 }
 
-/** The database stores "assets/..." paths; this project keeps them in "Images/...". */
-function img_path(string $dbPath): string
+// The database stores "assets/products/x.jpg"; your project folder is called Images.
+function img_path($db_path)
 {
-    return preg_replace('#^assets/#', 'Images/', $dbPath);
+    if (substr($db_path, 0, 7) == 'assets/') {
+        return 'Images/' . substr($db_path, 7);
+    }
+    return $db_path;
 }
 
-function rupiah($amount): string
+// 35000 -> "Rp 35.000"
+function rupiah($amount)
 {
     return 'Rp ' . number_format((float) $amount, 0, ',', '.');
 }
 
-function indo_date(string $datetime): string
+// "2026-11-18 10:00:00" -> "18 November 2026"
+function indo_date($datetime)
 {
-    static $months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli',
-                      'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-    $ts = strtotime($datetime);
-    if ($ts === false) {
+    $months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli',
+               'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+    $time = strtotime($datetime);
+    if ($time === false) {
         return '';
     }
-    return (int) date('j', $ts) . ' ' . $months[(int) date('n', $ts) - 1] . ' ' . date('Y', $ts);
+    $day = date('j', $time);
+    $month_number = date('n', $time);      // 1 to 12
+    $year = date('Y', $time);
+    return $day . ' ' . $months[$month_number - 1] . ' ' . $year;
 }
 
-/** site_menus.url_slug -> real page. Pages that do not exist yet stay "#". */
-function menu_url(string $slug): string
+// The menu table stores slugs like "/products". Turn them into a real page.
+function menu_url($slug)
 {
-    static $map = ['/products' => 'product.php'];
-    return $map[$slug] ?? '#';
+    if ($slug == '/products') {
+        return 'product.php';
+    }
+    return '#';     // pages that do not exist yet
 }
 
-/* ------------------------------------------------------------------ *
- * Filters, products
- * ------------------------------------------------------------------ */
-function get_str(string $key, int $max = 60): string
+// The page the visitor is on now, e.g. "product.php?cat=tent" (used to come back after Add to Cart)
+function current_url()
 {
-    $v = $_GET[$key] ?? '';
-    return is_string($v) ? mb_substr(trim($v), 0, $max) : '';
+    $url = basename($_SERVER['SCRIPT_NAME']);
+    if ($_SERVER['QUERY_STRING'] != '') {
+        $url = $url . '?' . $_SERVER['QUERY_STRING'];
+    }
+    return $url;
 }
 
-function current_page(): int
+/* ---------- Reading the filters from the address bar ---------- */
+
+// Reads one value from the URL (?cat=tent -> "tent"). Returns '' if missing.
+function get_text($name)
 {
-    $p = $_GET['page'] ?? 1;
-    return is_scalar($p) ? max(1, (int) $p) : 1;
+    if (!isset($_GET[$name]) || !is_string($_GET[$name])) {
+        return '';
+    }
+    return mb_substr(trim($_GET[$name]), 0, 60);   // trim spaces, keep max 60 characters
 }
 
-/** Read and whitelist every filter from the query string. */
-function read_filters(): array
+function current_page()
 {
-    $sort = get_str('sort');
-    if (!isset(SORTS[$sort])) {
+    $page = (int) get_text('page');      // (int) turns text into a whole number
+    if ($page < 1) {
+        $page = 1;
+    }
+    return $page;
+}
+
+// Collects all filters in one array. Wrong values are replaced by safe defaults.
+function read_filters()
+{
+    global $SORTS, $PRICE_RANGES, $AVAILABILITY;
+
+    $sort = get_text('sort');
+    if (!isset($SORTS[$sort])) {
         $sort = 'newest';
     }
-    $price = get_str('price');
-    if (!isset(PRICE_RANGES[$price])) {
+    $price = get_text('price');
+    if (!isset($PRICE_RANGES[$price])) {
         $price = '';
     }
-    $avail = get_str('avail');
-    if (!isset(AVAILABILITY[$avail])) {
+    $avail = get_text('avail');
+    if (!isset($AVAILABILITY[$avail])) {
         $avail = '';
     }
 
-    return [
-        'q'       => get_str('q'),
-        'cat'     => get_str('cat'),
-        'brand'   => get_str('brand'),
-        'size'    => get_str('size'),
-        'price'   => $price,
-        'avail'   => $avail,
-        'sort'    => $sort,
-        'popular' => false,
-    ];
+    $filters = [];
+    $filters['q']       = get_text('q');       // search words
+    $filters['cat']     = get_text('cat');     // category slug
+    $filters['brand']   = get_text('brand');
+    $filters['size']    = get_text('size');
+    $filters['price']   = $price;
+    $filters['avail']   = $avail;
+    $filters['sort']    = $sort;
+    $filters['popular'] = false;               // only the homepage sets this to true
+    return $filters;
 }
 
-function has_filters(array $f): bool
+// true when the visitor chose at least one filter (used to show "Clear all")
+function has_filters($f)
 {
-    return $f['q'] !== '' || $f['cat'] !== '' || $f['brand'] !== '' || $f['size'] !== ''
-        || $f['price'] !== '' || $f['avail'] !== '';
+    if ($f['q'] != '' || $f['cat'] != '' || $f['brand'] != '') {
+        return true;
+    }
+    if ($f['size'] != '' || $f['price'] != '' || $f['avail'] != '') {
+        return true;
+    }
+    return false;
 }
 
-/** Build the WHERE clause; values are always bound, never concatenated. */
-function build_where(array $f, array &$params): string
-{
-    $where = [];
+/* ---------- Getting products from the database ---------- */
 
-    if ($f['q'] !== '') {
-        $where[] = '(p.nama_produk LIKE ? OR p.brand LIKE ? OR p.deskripsi LIKE ?)';
+// Builds the WHERE part of the SQL from the filters.
+// Returns two things: ['sql' => 'WHERE ...', 'values' => [the values for the ? marks]]
+function build_where($f)
+{
+    global $PRICE_RANGES, $STOCK_SQL;
+
+    $conditions = [];   // pieces like "p.brand = ?"
+    $values = [];       // the values that go in place of the ? marks
+
+    if ($f['q'] != '') {
+        $conditions[] = '(p.nama_produk LIKE ? OR p.brand LIKE ? OR p.deskripsi LIKE ?)';
         $like = '%' . $f['q'] . '%';
-        array_push($params, $like, $like, $like);
+        $values[] = $like;
+        $values[] = $like;
+        $values[] = $like;
     }
-    if ($f['cat'] !== '') {
-        $where[] = 'c.slug_kategori = ?';
-        $params[] = $f['cat'];
+    if ($f['cat'] != '') {
+        $conditions[] = 'c.slug_kategori = ?';
+        $values[] = $f['cat'];
     }
-    if ($f['brand'] !== '') {
-        $where[] = 'p.brand = ?';
-        $params[] = $f['brand'];
+    if ($f['brand'] != '') {
+        $conditions[] = 'p.brand = ?';
+        $values[] = $f['brand'];
     }
-    if ($f['size'] !== '') {
-        $where[] = 'p.kapasitas_ukuran = ?';
-        $params[] = $f['size'];
+    if ($f['size'] != '') {
+        $conditions[] = 'p.kapasitas_ukuran = ?';
+        $values[] = $f['size'];
     }
-    if ($f['price'] !== '') {
-        [, $min, $max] = PRICE_RANGES[$f['price']];
-        $where[] = 'p.harga_per_hari >= ?';
-        $params[] = $min;
-        if ($max !== null) {
-            $where[] = 'p.harga_per_hari <= ?';
-            $params[] = $max;
+    if ($f['price'] != '') {
+        $range = $PRICE_RANGES[$f['price']];
+        $conditions[] = 'p.harga_per_hari >= ?';
+        $values[] = $range[1];                 // lowest price
+        if ($range[2] > 0) {                   // 0 means "no highest price"
+            $conditions[] = 'p.harga_per_hari <= ?';
+            $values[] = $range[2];
         }
     }
-    if ($f['avail'] === 'in_stock') {
-        $where[] = STOCK_EXPR . ' > 0';
-    } elseif ($f['avail'] === 'low_stock') {
-        $where[] = STOCK_EXPR . ' BETWEEN 1 AND 5';
+    if ($f['avail'] == 'in_stock') {
+        $conditions[] = $STOCK_SQL . ' > 0';
     }
-    if (!empty($f['popular'])) {
-        $where[] = 'p.is_popular = 1';
+    if ($f['avail'] == 'low_stock') {
+        $conditions[] = $STOCK_SQL . ' BETWEEN 1 AND 5';
+    }
+    if ($f['popular']) {
+        $conditions[] = 'p.is_popular = 1';
     }
 
-    return $where ? 'WHERE ' . implode(' AND ', $where) : '';
+    $sql = '';
+    if (count($conditions) > 0) {
+        $sql = 'WHERE ' . implode(' AND ', $conditions);   // join the pieces with AND
+    }
+    return ['sql' => $sql, 'values' => $values];
 }
 
-function count_products(array $f): int
+// How many products match the filters
+function count_products($f)
 {
-    $params = [];
-    $where = build_where($f, $params);
-    $sql = "SELECT COUNT(*) FROM products p JOIN categories c ON c.id_category = p.id_category $where";
-    return (int) db_query($sql, $params)->fetchColumn();
+    $where = build_where($f);
+    $sql = 'SELECT COUNT(*) FROM products p
+            JOIN categories c ON c.id_category = p.id_category ' . $where['sql'];
+    return (int) db_query($sql, $where['values'])->fetchColumn();
 }
 
-/** $order must come from SORTS (never from user input directly). */
-function query_products(array $f, string $order, int $limit, int $offset = 0): array
+// Gets one page of products.
+//   $order  = ORDER BY text taken from $SORTS (never typed by the visitor)
+//   $limit  = how many products, $offset = how many to skip first
+function get_products($f, $order, $limit, $offset = 0)
 {
-    $params = [];
-    $where = build_where($f, $params);
-    $sql = 'SELECT p.*, c.nama_kategori, c.slug_kategori, ' . STOCK_EXPR . " AS stok_total
+    global $STOCK_SQL;
+
+    $where = build_where($f);
+    // (int) makes sure these are numbers, so it is safe to put them straight in the SQL text
+    $limit = (int) $limit;
+    $offset = (int) $offset;
+
+    $sql = 'SELECT p.*, c.nama_kategori, c.slug_kategori, ' . $STOCK_SQL . ' AS stok_total
             FROM products p
-            JOIN categories c ON c.id_category = p.id_category
-            $where
-            ORDER BY $order
-            LIMIT ? OFFSET ?";
-    array_push($params, $limit, $offset);
-    return db_query($sql, $params)->fetchAll();
+            JOIN categories c ON c.id_category = p.id_category ' . $where['sql'] . '
+            ORDER BY ' . $order . '
+            LIMIT ' . $limit . ' OFFSET ' . $offset;
+    return db_query($sql, $where['values'])->fetchAll();
 }
 
-function filter_options(): array
+function get_categories()
 {
-    return [
-        'categories' => db_query('SELECT slug_kategori, nama_kategori, icon_url FROM categories ORDER BY id_category')->fetchAll(),
-        'brands'     => db_query('SELECT DISTINCT brand FROM products ORDER BY brand')->fetchAll(PDO::FETCH_COLUMN),
-        'sizes'      => db_query('SELECT DISTINCT kapasitas_ukuran FROM products WHERE kapasitas_ukuran IS NOT NULL ORDER BY kapasitas_ukuran')->fetchAll(PDO::FETCH_COLUMN),
-    ];
+    return db_query('SELECT slug_kategori, nama_kategori, icon_url FROM categories ORDER BY id_category')->fetchAll();
 }
 
-/** URL of product.php that keeps the current filters, with some values overridden. */
-function listing_url(array $f, array $override = []): string
+function get_brands()
 {
-    $q = array_merge([
-        'q'     => $f['q'],
-        'cat'   => $f['cat'],
-        'brand' => $f['brand'],
-        'size'  => $f['size'],
-        'price' => $f['price'],
-        'avail' => $f['avail'],
-        'sort'  => $f['sort'],
-    ], $override);
-
-    if (($q['sort'] ?? '') === 'newest') {
-        unset($q['sort']);
-    }
-    if (isset($q['page']) && (int) $q['page'] <= 1) {
-        unset($q['page']);
-    }
-    $q = array_filter($q, static fn($v) => $v !== '' && $v !== null);
-
-    return 'product.php' . ($q ? '?' . http_build_query($q) : '');
+    return db_query('SELECT DISTINCT brand FROM products ORDER BY brand')->fetchAll(PDO::FETCH_COLUMN);
 }
 
-function site_menus(): array
+function get_sizes()
+{
+    return db_query('SELECT DISTINCT kapasitas_ukuran FROM products WHERE kapasitas_ukuran IS NOT NULL ORDER BY kapasitas_ukuran')->fetchAll(PDO::FETCH_COLUMN);
+}
+
+function get_menus()
 {
     return db_query('SELECT nama_menu, url_slug FROM site_menus WHERE is_active = 1 ORDER BY urutan')->fetchAll();
 }
 
-/* ------------------------------------------------------------------ *
- * User, cart, CSRF, flash messages
- * ------------------------------------------------------------------ */
-function current_user_id(): int
+// Builds a link to product.php that keeps the current filters.
+// $changes lets you replace some, e.g. listing_url($f, ['page' => 2])
+function listing_url($f, $changes = [])
 {
-    return (int) ($_SESSION['id_user'] ?? DEMO_USER_ID);
+    $values = $f;                               // start from the current filters
+    foreach ($changes as $key => $value) {
+        $values[$key] = $value;                 // put the changes on top
+    }
+
+    $keep = [];
+    $keys = ['q', 'cat', 'brand', 'size', 'price', 'avail', 'sort', 'page'];
+    foreach ($keys as $key) {
+        if (!isset($values[$key]) || $values[$key] === '') {
+            continue;                           // skip empty values: keeps the URL short
+        }
+        if ($key == 'sort' && $values[$key] == 'newest') {
+            continue;                           // "newest" is the default, no need to show it
+        }
+        if ($key == 'page' && $values[$key] <= 1) {
+            continue;                           // page 1 is the default too
+        }
+        $keep[$key] = $values[$key];
+    }
+
+    if (count($keep) == 0) {
+        return 'product.php';
+    }
+    return 'product.php?' . http_build_query($keep);   // {cat: tent} -> "cat=tent"
 }
 
-function cart_count(): int
+/* ---------- User, cart, security token, messages ---------- */
+
+// Who is shopping? No login page yet, so we use the demo user from config.php
+function current_user_id()
+{
+    if (isset($_SESSION['id_user'])) {
+        return (int) $_SESSION['id_user'];
+    }
+    return DEMO_USER_ID;
+}
+
+// Total number of items in the cart (shown in the little yellow badge)
+function cart_count()
 {
     $sql = 'SELECT COALESCE(SUM(ci.qty), 0)
             FROM carts c JOIN cart_items ci ON ci.id_cart = c.id_cart
@@ -239,27 +306,57 @@ function cart_count(): int
     return (int) db_query($sql, [current_user_id()])->fetchColumn();
 }
 
-function csrf_token(): string
+// A secret random text put in every Add to Cart form. It proves the click came
+// from our own page and not from another website ("CSRF protection").
+function csrf_token()
 {
-    if (empty($_SESSION['csrf'])) {
+    if (!isset($_SESSION['csrf'])) {
         $_SESSION['csrf'] = bin2hex(random_bytes(16));
     }
     return $_SESSION['csrf'];
 }
 
-function csrf_valid(string $token): bool
+function csrf_valid($token)
 {
-    return !empty($_SESSION['csrf']) && hash_equals($_SESSION['csrf'], $token);
+    // hash_equals compares two texts safely. A normal == would also work here.
+    return isset($_SESSION['csrf']) && hash_equals($_SESSION['csrf'], $token);
 }
 
-function flash_set(string $message, string $type = 'ok'): void
+// "Flash" message: saved on one page, shown once on the next page, then forgotten.
+function flash_set($message, $type = 'ok')
 {
     $_SESSION['flash'] = ['message' => $message, 'type' => $type];
 }
 
-function flash_pull(): ?array
+function flash_pull()
 {
-    $f = $_SESSION['flash'] ?? null;
-    unset($_SESSION['flash']);
-    return $f;
+    if (!isset($_SESSION['flash'])) {
+        return null;
+    }
+    $flash = $_SESSION['flash'];
+    unset($_SESSION['flash']);      // remove it so it only shows once
+    return $flash;
+}
+
+/* ---------- Print small pieces of the page ---------- */
+// These functions just load a small template file. The variables used by the
+// file (like $p) are the function's own variables, so the file can see them.
+
+function print_card($p, $show_detail)
+{
+    include __DIR__ . '/../templates/partials/card.xhtml';
+}
+
+function print_select($name, $label, $options, $selected, $show_blank)
+{
+    include __DIR__ . '/../templates/partials/select.xhtml';
+}
+
+function print_carousel($title, $class_name, $products)
+{
+    include __DIR__ . '/../templates/partials/carousel.xhtml';
+}
+
+function print_review($r){
+    include __DIR__ . '/../templates/partials/review.xhtml';
 }

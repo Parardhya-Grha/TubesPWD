@@ -1,99 +1,106 @@
 <?php
-/**
- * POST add_to_cart.php   (fields: id_product, csrf, return)
- *
- * Adds one unit of a product to the current user's cart. Because the colour
- * selector was removed from the design, the first variant that still has
- * stock is used (cart_items.id_variant is required by the database).
- *
- * Answers JSON for the JavaScript version (X-Requested-With header) and
- * redirects back with a message for plain form posts.
- */
+// add_to_cart.php - receives the "Add to Cart" button click (a POST) and saves it.
+// There are two kinds of visitors:
+//   - JavaScript on: the page asks in the background ("ajax") and we answer with JSON
+//   - JavaScript off: the browser sends a normal form and we send the visitor back
 require_once __DIR__ . '/includes/helpers.php';
 
-$isAjax = (($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '') === 'XMLHttpRequest');
+// Did the request come from our JavaScript? (listing.js adds this header)
+$is_ajax = false;
+if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest') {
+    $is_ajax = true;
+}
 
-function finish(bool $ok, string $message, int $status, bool $isAjax): void
+// Answers the visitor and stops. $ok = true/false, $status = HTTP code (200 ok, 404 not found...)
+function reply($ok, $message, $status, $is_ajax)
 {
-    if ($isAjax) {
+    if ($is_ajax) {
         http_response_code($status);
         header('Content-Type: application/json; charset=UTF-8');
         echo json_encode(['ok' => $ok, 'message' => $message, 'cartCount' => cart_count()]);
         exit;
     }
 
-    flash_set($message, $ok ? 'ok' : 'error');
-    // Only allow a plain "page.php?query" target, never another site.
-    $return = (string) ($_POST['return'] ?? '');
-    if (!preg_match('/^[A-Za-z0-9_\-]+\.php(\?[A-Za-z0-9_\-=&%.+\[\]]*)?$/', $return)) {
-        $return = 'product.php';
+    // No JavaScript: save the message, then go back to the page the visitor was on
+    if ($ok) {
+        flash_set($message, 'ok');
+    } else {
+        flash_set($message, 'error');
     }
-    header('Location: ' . $return);
+    $back = 'product.php';
+    if (isset($_POST['return'])) {
+        $return = $_POST['return'];
+        // Only allow our own pages, so nobody can use this to send visitors to another website
+        if (substr($return, 0, 11) == 'product.php' || substr($return, 0, 9) == 'index.php') {
+            $back = $return;
+        }
+    }
+    header('Location: ' . $back);
     exit;
 }
 
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header('Allow: POST');
-    finish(false, 'Method not allowed.', 405, $isAjax);
-}
-if (!csrf_valid((string) ($_POST['csrf'] ?? ''))) {
-    finish(false, 'Session expired. Please reload the page.', 403, $isAjax);
+// Only accept a POST (a button click), not someone typing the address in the browser
+if ($_SERVER['REQUEST_METHOD'] != 'POST') {
+    reply(false, 'Method not allowed.', 405, $is_ajax);
 }
 
-$idProduct = (int) ($_POST['id_product'] ?? 0);
-$idUser    = current_user_id();
-$pdo       = db();
-
-try {
-    $pdo->beginTransaction();
-
-    $product = db_query('SELECT nama_produk FROM products WHERE id_product = ?', [$idProduct])->fetch();
-    if (!$product) {
-        $pdo->rollBack();
-        finish(false, 'Product not found.', 404, $isAjax);
-    }
-
-    $variant = db_query(
-        'SELECT id_variant, stok_tersedia FROM product_variants
-         WHERE id_product = ? AND stok_tersedia > 0 ORDER BY id_variant LIMIT 1',
-        [$idProduct]
-    )->fetch();
-    if (!$variant) {
-        $pdo->rollBack();
-        finish(false, $product['nama_produk'] . ' is out of stock.', 409, $isAjax);
-    }
-
-    $idCart = db_query('SELECT id_cart FROM carts WHERE id_user = ?', [$idUser])->fetchColumn();
-    if (!$idCart) {
-        db_query('INSERT INTO carts (id_user) VALUES (?)', [$idUser]);
-        $idCart = (int) $pdo->lastInsertId();
-    }
-
-    $item = db_query(
-        'SELECT id_cart_item, qty FROM cart_items WHERE id_cart = ? AND id_product = ? AND id_variant = ?',
-        [(int) $idCart, $idProduct, (int) $variant['id_variant']]
-    )->fetch();
-
-    if ($item) {
-        if ((int) $item['qty'] + 1 > (int) $variant['stok_tersedia']) {
-            $pdo->rollBack();
-            finish(false, 'Only ' . (int) $variant['stok_tersedia'] . ' available for ' . $product['nama_produk'] . '.', 409, $isAjax);
-        }
-        db_query('UPDATE cart_items SET qty = qty + 1 WHERE id_cart_item = ?', [(int) $item['id_cart_item']]);
-    } else {
-        db_query(
-            'INSERT INTO cart_items (id_cart, id_product, id_variant, qty) VALUES (?, ?, ?, 1)',
-            [(int) $idCart, $idProduct, (int) $variant['id_variant']]
-        );
-    }
-
-    $pdo->commit();
-} catch (Throwable $ex) {
-    if ($pdo->inTransaction()) {
-        $pdo->rollBack();
-    }
-    error_log('add_to_cart failed: ' . $ex->getMessage());
-    finish(false, 'Could not add to cart. Please try again.', 500, $isAjax);
+// Check the secret token from the form
+$token = '';
+if (isset($_POST['csrf'])) {
+    $token = $_POST['csrf'];
+}
+if (!csrf_valid($token)) {
+    reply(false, 'Session expired. Please reload the page.', 403, $is_ajax);
 }
 
-finish(true, $product['nama_produk'] . ' added to cart.', 200, $isAjax);
+$id_product = 0;
+if (isset($_POST['id_product'])) {
+    $id_product = (int) $_POST['id_product'];
+}
+$id_user = current_user_id();
+
+// 1. Does the product exist?
+$product = db_query('SELECT nama_produk FROM products WHERE id_product = ?', [$id_product])->fetch();
+if (!$product) {
+    reply(false, 'Product not found.', 404, $is_ajax);
+}
+
+// 2. Find a colour version that is in stock. (The colour picker was removed, so we
+//    take the first one that still has stock; the cart table needs one.)
+$variant = db_query(
+    'SELECT id_variant, stok_tersedia FROM product_variants
+     WHERE id_product = ? AND stok_tersedia > 0 ORDER BY id_variant LIMIT 1',
+    [$id_product]
+)->fetch();
+if (!$variant) {
+    reply(false, $product['nama_produk'] . ' is out of stock.', 409, $is_ajax);
+}
+
+// 3. Find this user's cart, or create one
+$id_cart = db_query('SELECT id_cart FROM carts WHERE id_user = ?', [$id_user])->fetchColumn();
+if (!$id_cart) {
+    db_query('INSERT INTO carts (id_user) VALUES (?)', [$id_user]);
+    $id_cart = $pdo->lastInsertId();       // the number the database just gave the new cart
+}
+
+// 4. Is this product already in the cart?
+$item = db_query(
+    'SELECT id_cart_item, qty FROM cart_items WHERE id_cart = ? AND id_product = ? AND id_variant = ?',
+    [$id_cart, $id_product, $variant['id_variant']]
+)->fetch();
+
+if ($item) {
+    // Yes: add one more, but never more than the stock
+    if ($item['qty'] + 1 > $variant['stok_tersedia']) {
+        reply(false, 'Only ' . $variant['stok_tersedia'] . ' available for ' . $product['nama_produk'] . '.', 409, $is_ajax);
+    }
+    db_query('UPDATE cart_items SET qty = qty + 1 WHERE id_cart_item = ?', [$item['id_cart_item']]);
+} else {
+    // No: add a new line with quantity 1
+    db_query(
+        'INSERT INTO cart_items (id_cart, id_product, id_variant, qty) VALUES (?, ?, ?, 1)',
+        [$id_cart, $id_product, $variant['id_variant']]
+    );
+}
+
+reply(true, $product['nama_produk'] . ' added to cart.', 200, $is_ajax);

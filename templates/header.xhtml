@@ -1,0 +1,54 @@
+<?php
+// header.xhtml - the top of every page (head + menu bar).
+// The page file sets these before including this file:
+//   $page_title   text in the browser tab
+//   $active_menu  slug of the menu item to highlight, e.g. '/products'
+//   $search_text  text to show in the search box
+
+header('Content-Type: text/html; charset=UTF-8');
+// We print the XML line with echo, because PHP could mistake "<?xml" for PHP code.
+echo '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+
+$menus = get_menus();
+$cart_total = cart_count();
+?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="id" lang="id">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title><?= e($page_title) ?></title>
+  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&amp;family=Roboto:wght@100;300;400;500;700&amp;display=swap" />
+  <link rel="stylesheet" type="text/css" href="css/style.css" />
+  <link rel="stylesheet" type="text/css" href="css/listing.css" />
+</head>
+<body>
+
+  <!-- NAVBAR -->
+  <div class="header">
+    <div class="container header__inner">
+      <a href="index.php" class="logo">CampRent</a>
+
+      <div class="header__right">
+        <div class="nav">
+<?php foreach ($menus as $menu) { ?>
+          <a href="<?= e(menu_url($menu['url_slug'])) ?>"<?php if ($menu['url_slug'] == $active_menu) { echo ' class="is-active"'; } ?>><?= e($menu['nama_menu']) ?></a>
+<?php } ?>
+        </div>
+
+        <div class="header__actions">
+          <form class="search" action="product.php" method="get">
+            <div>
+              <img class="search__icon" src="<?= ASSET['search'] ?>" alt="" width="17" height="17" />
+              <input id="search-input" type="text" name="q" value="<?= e($search_text) ?>" title="Cari produk" />
+            </div>
+          </form>
+          <a class="icon-link" href="#" title="Notifications"><img src="<?= ASSET['bell'] ?>" alt="" width="24" height="24" /></a>
+          <a class="icon-link cart" href="#" title="Cart"><img src="<?= ASSET['cart'] ?>" alt="" width="24" height="24" /><span id="cart-badge" class="cart__badge<?php if ($cart_total <= 0) { echo ' is-empty'; } ?>"><?= $cart_total ?></span></a>
+          <a class="icon-link" href="#" title="Account"><img src="<?= ASSET['user'] ?>" alt="" width="25" height="25" /></a>
+        </div>
+      </div>
+    </div>
+  </div>
+

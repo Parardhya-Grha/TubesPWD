@@ -1,12 +1,14 @@
-    <div class="products products--{{key}}">
-      <h2 class="section-title">{{title}}</h2>
+<?php
+// carousel.xhtml - a title + a row of product cards with arrows.
+// Needs: $title, $class_name ('popular' or 'newest'), $products
+?>
+    <div class="products products--<?= e($class_name) ?>">
+      <h2 class="section-title"><?= e($title) ?></h2>
       <div class="carousel">
-        <button type="button" class="carousel__btn carousel__btn--prev" title="Sebelumnya"><img src="{{asset.arrow}}" alt="" width="12" height="20" /></button>
+        <button type="button" class="carousel__btn carousel__btn--prev" title="Sebelumnya"><img src="<?= ASSET['arrow'] ?>" alt="" width="12" height="20" /></button>
         <div class="carousel__track">
-{{#each products}}
-{{> card}}
-{{/each}}
+<?php foreach ($products as $p) { print_card($p, false); } ?>
         </div>
-        <button type="button" class="carousel__btn carousel__btn--next" title="Berikutnya"><img src="{{asset.arrow}}" alt="" width="12" height="20" /></button>
+        <button type="button" class="carousel__btn carousel__btn--next" title="Berikutnya"><img src="<?= ASSET['arrow'] ?>" alt="" width="12" height="20" /></button>
       </div>
     </div>

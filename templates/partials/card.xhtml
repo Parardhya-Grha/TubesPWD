@@ -1,29 +1,39 @@
+<?php
+// card.xhtml - ONE product card. Used on the homepage and on the listing page.
+// Needs: $p (one product row from the database) and $show_detail (true/false).
+
+$in_stock = ($p['stok_total'] > 0);
+
+// Badge: the database says 'None', 'New', 'Best Seller' or 'Limited Stock'
+$badge = $p['badge'];
+$badge_class = 'card__badge--' . strtolower(str_replace(' ', '-', $badge));   // "Best Seller" -> "card__badge--best-seller"
+?>
         <div class="card">
           <div class="card__media">
             <div class="card__photo">
-{{#if badge}}
-              <span class="card__badge {{badge_class}}">{{badge}}</span>
-{{/if}}
-              <img src="{{image}}" alt="{{name}}" />
+<?php if ($badge != 'None') { ?>
+              <span class="card__badge <?= e($badge_class) ?>"><?= e($badge) ?></span>
+<?php } ?>
+              <img src="<?= e(img_path($p['gambar_utama'])) ?>" alt="<?= e($p['nama_produk']) ?>" />
             </div>
           </div>
           <div class="card__info">
-            <p class="card__brand">{{brand_line}}</p>
-            <h3 class="card__name" title="{{name}}">{{name}}</h3>
-{{#if show_detail}}
-            <p class="card__detail">{{detail}}</p>
-{{/if}}
-            <p class="card__price"><span class="card__amount">{{price}}</span> <span class="card__unit">/hari</span></p>
+            <p class="card__brand"><?= e($p['brand'] . ' - ' . $p['nama_kategori']) ?></p>
+            <h3 class="card__name" title="<?= e($p['nama_produk']) ?>"><?= e($p['nama_produk']) ?></h3>
+<?php if ($show_detail) { ?>
+            <p class="card__detail"><?= e($p['kapasitas_ukuran']) ?></p>
+<?php } ?>
+            <p class="card__price"><span class="card__amount"><?= e(rupiah($p['harga_per_hari'])) ?></span> <span class="card__unit">/hari</span></p>
             <form class="add-to-cart" action="add_to_cart.php" method="post">
               <div>
-                <input type="hidden" name="id_product" value="{{id_product}}" />
-                <input type="hidden" name="csrf" value="{{csrf}}" />
-                <input type="hidden" name="return" value="{{return_to}}" />
-{{#if in_stock}}
-                <button type="submit" class="card__btn"><img src="{{asset.cart_small}}" alt="" width="8" height="8" /> Add to Cart</button>
-{{else}}
+                <input type="hidden" name="id_product" value="<?= (int) $p['id_product'] ?>" />
+                <input type="hidden" name="csrf" value="<?= e(csrf_token()) ?>" />
+                <input type="hidden" name="return" value="<?= e(current_url()) ?>" />
+<?php if ($in_stock) { ?>
+                <button type="submit" class="card__btn"><img src="<?= ASSET['cart_small'] ?>" alt="" width="8" height="8" /> Add to Cart</button>
+<?php } else { ?>
                 <button type="button" class="card__btn card__btn--disabled" disabled="disabled">Out of Stock</button>
-{{/if}}
+<?php } ?>
               </div>
             </form>
           </div>
