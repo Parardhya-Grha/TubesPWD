@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 26, 2026 at 02:55 AM
+-- Generation Time: Nov 26, 2026 at 06:37 PM
 -- Server version: 10.11.16-MariaDB
 -- PHP Version: 8.5.12
 
@@ -20,6 +20,8 @@ SET time_zone = "+00:00";
 --
 -- Database: `db_camprent`
 --
+CREATE DATABASE IF NOT EXISTS `db_camprent` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE `db_camprent`;
 
 -- --------------------------------------------------------
 
@@ -90,7 +92,8 @@ CREATE TABLE `cart_items` (
 INSERT INTO `cart_items` (`id_cart_item`, `id_cart`, `id_product`, `id_variant`, `qty`) VALUES
 (1, 1, 1, 1, 1),
 (2, 1, 4, 5, 1),
-(3, 1, 10, 12, 1);
+(3, 1, 10, 12, 1),
+(4, 1, 2, 3, 1);
 
 -- --------------------------------------------------------
 
@@ -111,12 +114,12 @@ CREATE TABLE `categories` (
 --
 
 INSERT INTO `categories` (`id_category`, `nama_kategori`, `slug_kategori`, `icon_url`, `deskripsi`) VALUES
-(1, 'Carrier Bag', 'carrier-bag', 'assets/icons/cat-carrier.png', 'Tas gunung dan ransel pendakian berbagai kapasitas liter'),
-(2, 'Tent', 'tent', 'assets/icons/cat-tent.png', 'Tenda dome kapasitas 2 hingga 6 orang tahan angin dan hujan'),
-(3, 'Cooking Gear', 'cooking-gear', 'assets/icons/cat-cooking.png', 'Peralatan masak lapangan, nesting, dan kompor portable'),
-(4, 'Tracking Pole', 'tracking-pole', 'assets/icons/cat-pole.png', 'Tongkat bantu pendakian ringan dan kokoh'),
-(5, 'Jacket', 'jacket', 'assets/icons/cat-jacket.png', 'Jaket gunung waterproof dan windproof'),
-(6, 'Shoes', 'shoes', 'assets/icons/cat-shoes.png', 'Sepatu hiking dengan grip anti-slip dan pelindung pergelangan');
+(1, 'Carrier Bag', 'carrier-bag', 'Images/carrier-NorthF.svg', 'Tas gunung dan ransel pendakian berbagai kapasitas liter'),
+(2, 'Tent', 'tent', 'Images/tenda.svg', 'Tenda dome kapasitas 2 hingga 6 orang tahan angin dan hujan'),
+(3, 'Cooking Gear', 'cooking-gear', 'Images/alat-masak.svg', 'Peralatan masak lapangan, nesting, dan kompor portable'),
+(4, 'Tracking Pole', 'tracking-pole', 'Images/tracking-pool.svg', 'Tongkat bantu pendakian ringan dan kokoh'),
+(5, 'Jacket', 'jacket', 'Images/jacket.svg', 'Jaket gunung waterproof dan windproof'),
+(6, 'Shoes', 'shoes', 'Images/shoes.svg', 'Sepatu hiking dengan grip anti-slip dan pelindung pergelangan');
 
 -- --------------------------------------------------------
 
@@ -145,18 +148,19 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`id_product`, `id_category`, `nama_produk`, `brand`, `kapasitas_ukuran`, `harga_per_hari`, `deskripsi`, `gambar_utama`, `badge`, `is_popular`, `rating_rata_rata`, `total_disewa`, `created_at`) VALUES
-(1, 1, 'Carrier Eiger 60L Blue', 'Eiger', '60 Liter', 35000.00, 'Tas carrier kapasitas 60L dengan backsystem ergonomis dan raincover.', 'assets/products/carrier-eiger-60l-blue.jpg', 'Best Seller', 1, 4.9, 142, '2026-11-25 06:42:02'),
-(2, 1, 'Consina Tarebbi 60L', 'Consina', '60 Liter', 35000.00, 'Carrier ringan dan tangguh untuk pendakian 2-4 hari.', 'assets/products/consina-tarebbi-60l.jpg', 'None', 1, 4.8, 118, '2026-11-25 06:42:02'),
-(3, 2, 'Tendaki Borneo 4 Tent', 'Tendaki', '4 Orang', 45000.00, 'Tenda double layer kapasitas 4 orang dengan frame alloy.', 'assets/products/tendaki-borneo-4.jpg', 'New', 0, 4.9, 64, '2026-11-25 06:42:02'),
-(4, 2, 'Consina Magnum 4 Tent', 'Consina', '4 Orang', 50000.00, 'Tenda camping keluarga dan pendakian kapasitas 4 orang tahan hujan deras.', 'assets/products/consina-magnum-4.jpg', 'None', 1, 4.9, 130, '2026-11-25 06:42:02'),
-(5, 4, 'Ultra-light Trekking Pole', 'Naturehike', '135 cm', 15000.00, 'Trekking pole berbahan duralumin ringan dengan sistem pengunci cepat.', 'assets/products/ultralight-trekking-pole.jpg', 'None', 1, 4.7, 95, '2026-11-25 06:42:02'),
-(6, 5, 'Eiger Waterproof Jacket', 'Eiger', 'Size L', 30000.00, 'Jaket gunung tahan air dan angin dengan sirkulasi udara optimal.', 'assets/products/eiger-waterproof-jacket.jpg', 'Best Seller', 1, 4.9, 110, '2026-11-25 06:42:02'),
-(7, 5, 'Arc\'teryx Alpha SV Jacket', 'Arc\'teryx', 'Size M', 40000.00, 'Jaket hardshell cuaca ekstrem dengan lapisan Gore-Tex Pro.', 'assets/products/arcteryx-alpha-sv.jpg', 'New', 0, 5.0, 41, '2026-11-25 06:42:02'),
-(8, 6, 'Salomon X Ultra 4 Gore-Tex', 'Salomon', 'Size 42', 45000.00, 'Sepatu hiking ringan dengan sol Contagrip anti licin.', 'assets/products/salomon-x-ultra-4.jpg', 'Limited Stock', 0, 4.9, 77, '2026-11-25 06:42:02'),
-(9, 3, 'Nesting Cooking Gear Set', 'Naturehike', '3-4 Orang', 20000.00, 'Set panci dan wajan camping aluminium anodized anti lengket.', 'assets/products/nesting-cooking-set.jpg', 'None', 0, 4.8, 88, '2026-11-25 06:42:02'),
-(10, 3, 'Portable Stove', 'Kovar', 'Standard', 15000.00, 'Kompor gas mini portable lipat tahan angin untuk kegiatan outdoor.', 'assets/products/portable-stove.jpg', 'None', 0, 4.8, 125, '2026-11-25 06:42:02'),
-(11, 1, 'Sleeping Bag Polar', 'Eiger', '200 x 75 cm', 20000.00, 'Kantong tidur lapisan polar hangat untuk suhu dingin pegunungan.', 'assets/products/sleeping-bag-polar.jpg', 'None', 0, 4.7, 102, '2026-11-25 06:42:02'),
-(12, 2, 'Matras Camping', 'Consina', '180 x 60 cm', 10000.00, 'Matras spons gulung isolasi dingin alas tenda.', 'assets/products/matras-camping.jpg', 'None', 0, 4.6, 150, '2026-11-25 06:42:02');
+(1, 1, 'Carrier Eiger 60L Blue', 'Eiger', '60 Liter', 35000.00, 'Tas carrier kapasitas 60L dengan backsystem ergonomis dan raincover.', 'Images/carrier-Eiger.svg', 'Best Seller', 1, 4.9, 142, '2026-11-25 06:42:02'),
+(2, 1, 'Consina Tarebbi 60L', 'Consina', '60 Liter', 35000.00, 'Carrier ringan dan tangguh untuk pendakian 2-4 hari.', 'Images/carrier.png', 'None', 1, 4.8, 118, '2026-11-25 06:42:02'),
+(3, 2, 'Tendaki Borneo 4 Tent', 'Tendaki', '4 Orang', 45000.00, 'Tenda double layer kapasitas 4 orang dengan frame alloy.', 'Images/tenda.svg', 'New', 0, 4.9, 64, '2026-11-25 06:42:02'),
+(4, 2, 'Consina Magnum 4 Tent', 'Consina', '4 Orang', 50000.00, 'Tenda camping keluarga dan pendakian kapasitas 4 orang tahan hujan deras.', 'Images/tendaConsina.svg', 'None', 1, 4.9, 130, '2026-11-25 06:42:02'),
+(5, 4, 'Ultra-light Trekking Pole', 'Naturehike', '135 cm', 15000.00, 'Trekking pole berbahan duralumin ringan dengan sistem pengunci cepat.', 'Images/Tracking-Pole-Elfs.svg', 'None', 1, 4.7, 95, '2026-11-25 06:42:02'),
+(6, 5, 'Eiger Waterproof Jacket', 'Eiger', 'Size L', 30000.00, 'Jaket gunung tahan air dan angin dengan sirkulasi udara optimal.', 'Images/Jacket-Arc\'teryx.svg', 'Best Seller', 1, 4.9, 110, '2026-11-25 06:42:02'),
+(7, 5, 'Arc\'teryx Alpha SV Jacket', 'Arc\'teryx', 'Size M', 40000.00, 'Jaket hardshell cuaca ekstrem dengan lapisan Gore-Tex Pro.', 'Images/Jacket-Arc\'teryx-White.svg', 'New', 0, 5.0, 41, '2026-11-25 06:42:02'),
+(8, 6, 'Salomon X Ultra 4 Gore-Tex', 'Salomon', 'Size 42', 45000.00, 'Sepatu hiking ringan dengan sol Contagrip anti licin.', 'Images/Sepatu-Salomon.svg', 'Limited Stock', 0, 4.9, 77, '2026-11-25 06:42:02'),
+(9, 3, 'Nesting Cooking Gear Set', 'Naturehike', '3-4 Orang', 20000.00, 'Set panci dan wajan camping aluminium anodized anti lengket.', 'Images/alat-masak.svg', 'None', 0, 4.8, 88, '2026-11-25 06:42:02'),
+(10, 3, 'Portable Stove', 'Kovar', 'Standard', 15000.00, 'Kompor gas mini portable lipat tahan angin untuk kegiatan outdoor.', 'Images/alat-masak.svg', 'None', 0, 4.8, 125, '2026-11-25 06:42:02'),
+(11, 1, 'Sleeping Bag Polar', 'Eiger', '200 x 75 cm', 20000.00, 'Kantong tidur lapisan polar hangat untuk suhu dingin pegunungan.', 'Images/carrier-NorthF.svg', 'None', 0, 4.7, 102, '2026-11-25 06:42:02'),
+(12, 2, 'Matras Camping', 'Consina', '180 x 60 cm', 10000.00, 'Matras spons gulung isolasi dingin alas tenda.', 'Images/tenda.svg', 'None', 0, 4.6, 150, '2026-11-25 06:42:02'),
+(13, 6, 'Sepatu Bourderis Arei Outdoorgear', 'Arei', 'Size 41', 30000.00, 'sepatu arei dengan Grip system pada bagian outsole rubber memiliki daya cengkram yang baik dan kuat untuk menjaga pijakan tetap stabil dan tidak licin', 'Images/Sepatu-Bourderis-Arei-Outdoorgear.svg', 'New', 0, 5.0, 0, '2026-11-26 08:32:01');
 
 -- --------------------------------------------------------
 
@@ -191,7 +195,8 @@ INSERT INTO `product_variants` (`id_variant`, `id_product`, `nama_warna`, `kode_
 (11, 9, 'Stainless Silver', '#C0C0C0', 'assets/products/nesting-cooking-set.jpg', 10),
 (12, 10, 'Standard Black', '#2B2B2B', 'assets/products/portable-stove.jpg', 12),
 (13, 11, 'Midnight Blue', '#1F305E', 'assets/products/sleeping-bag-polar.jpg', 11),
-(14, 12, 'Dark Grey', '#3A3A3A', 'assets/products/matras-camping.jpg', 15);
+(14, 12, 'Dark Grey', '#3A3A3A', 'assets/products/matras-camping.jpg', 15),
+(16, 13, 'Default', '#000000', 'Images/Sepatu-Bourderis-Arei-Outdoorgear.svg', 6);
 
 -- --------------------------------------------------------
 
@@ -350,8 +355,8 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id_user`, `nama_lengkap`, `email`, `no_hp`, `password_hash`, `role`, `alamat_default`, `created_at`) VALUES
 (1, 'Admin CampRent', 'admin@camprent.id', '081234567890', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', 'Basecamp CampRent Yogyakarta', '2026-11-25 06:42:02'),
-(2, 'Ardhya Jayawardhana', 'ardhya@example.com', '085712345678', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'customer', 'Jl. Babarsari No. 43, Depok, Sleman, Yogyakarta', '2026-11-25 06:42:02'),
-(3, 'Nabila Putri', 'nabila@example.com', '082198765432', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'customer', 'Jl. Kaliurang KM 5, Sleman, Yogyakarta', '2026-11-25 06:42:02');
+(2, 'Dio Aja', 'dio@example.com', '082372344546', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'customer', 'Jl. Babarsari No. 12, Depok, Sleman, Yogyakarta', '2026-11-25 06:42:02'),
+(3, 'Si Yohwora', 'yohwora@example.com', '082149736370', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'customer', 'Jl. Kaliurang KM 5, Sleman, Yogyakarta', '2026-11-25 06:42:02');
 
 --
 -- Indexes for dumped tables
@@ -466,7 +471,7 @@ ALTER TABLE `carts`
 -- AUTO_INCREMENT for table `cart_items`
 --
 ALTER TABLE `cart_items`
-  MODIFY `id_cart_item` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_cart_item` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `categories`
@@ -478,13 +483,13 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT for table `products`
 --
 ALTER TABLE `products`
-  MODIFY `id_product` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id_product` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `product_variants`
 --
 ALTER TABLE `product_variants`
-  MODIFY `id_variant` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id_variant` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `rentals`
