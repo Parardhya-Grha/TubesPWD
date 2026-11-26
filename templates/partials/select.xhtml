@@ -1,0 +1,8 @@
+        <div class="select"><select name="{{name}}" title="{{label}}">
+{{#if placeholder}}
+          <option value="">{{label}}</option>
+{{/if}}
+{{#each options}}
+          <option value="{{value}}"{{#if selected}} selected="selected"{{/if}}>{{label}}</option>
+{{/each}}
+        </select></div>

@@ -1,0 +1,12 @@
+    <div class="products products--{{key}}">
+      <h2 class="section-title">{{title}}</h2>
+      <div class="carousel">
+        <button type="button" class="carousel__btn carousel__btn--prev" title="Sebelumnya"><img src="{{asset.arrow}}" alt="" width="12" height="20" /></button>
+        <div class="carousel__track">
+{{#each products}}
+{{> card}}
+{{/each}}
+        </div>
+        <button type="button" class="carousel__btn carousel__btn--next" title="Berikutnya"><img src="{{asset.arrow}}" alt="" width="12" height="20" /></button>
+      </div>
+    </div>
