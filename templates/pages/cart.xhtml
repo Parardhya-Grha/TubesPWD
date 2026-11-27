@@ -1,0 +1,248 @@
+<div id="cart-page" class="container cart-page">
+  <input id="cart-csrf" type="hidden" value="{{csrf}}" />
+
+  <h1 class="page-title cart-page__title">Keranjang</h1>
+
+  {{#if is_empty}}
+  <!-- EMPTY CART STATE -->
+  <div class="cart-empty">
+    <div class="cart-empty__icon" aria-hidden="true">
+      <img src="{{asset.cart}}" alt="" width="54" height="54" />
+    </div>
+    <h2 class="cart-empty__title">Your cart is empty</h2>
+    <p class="cart-empty__desc">Your next adventure starts with the right gear.</p>
+    <a class="cart-empty__btn" href="product.php">Browse Products</a>
+  </div>
+  {{/if}}
+
+  {{#if show_guest_banner}}
+  <!-- GUEST NOTIFICATION BANNER (shown only when user is not logged in) -->
+  <div class="cart-guest-banner">
+    <div class="cart-guest-banner__text">
+      <span class="cart-info-dot">i</span>
+      <span><strong>Mode Tamu — not signed in.</strong> Kamu masih dapat memesan via WhatsApp. Direct Order memerlukan login Akun.</span>
+    </div>
+    <a class="cart-guest-banner__btn" href="login.php?redirect=cart.php">Sign in</a>
+  </div>
+  {{/if}}
+
+  {{#if has_items}}
+  <!-- CARD 1: DETAIL SEWA (Delivery Notes removed per specification) -->
+  <div class="cart-card">
+    <h2 class="cart-card__title">Detail Sewa</h2>
+
+    <div class="cart-form-grid">
+      <div class="cart-field">
+        <label for="cart-name">Name</label>
+        <input id="cart-name" type="text" name="nama_penerima" value="{{customer_name}}" title="Name" />
+      </div>
+
+      <div class="cart-field">
+        <label for="cart-wa">WhatsApp Number</label>
+        <input id="cart-wa" type="text" name="no_wa" value="{{customer_phone}}" title="WhatsApp Number" />
+      </div>
+
+      <div class="cart-field">
+        <label for="bulk-start-date">Apply dates to all items</label>
+        <div class="cart-date-pair">
+          <input id="bulk-start-date" type="date" title="Start date for all items" />
+          <span class="cart-date-pair__sep">–</span>
+          <input id="bulk-end-date" type="date" title="End date for all items" />
+        </div>
+        <p class="cart-field__hint">Per-item dates in the table below are required. This is only a quick apply-all shortcut.</p>
+      </div>
+
+      <div class="cart-field">
+        <label for="cart-pickup">Pickup Type</label>
+        <div class="select cart-select">
+          <select id="cart-pickup" name="pickup_type" title="Pickup Type">
+            {{{pickup_options}}}
+          </select>
+        </div>
+      </div>
+
+      <div id="delivery-address-group" class="cart-field cart-field--full">
+        <label for="cart-address">Delivery Address</label>
+        <input id="cart-address" type="text" name="alamat_pengiriman" value="{{delivery_address}}" title="Delivery Address" />
+      </div>
+    </div>
+
+    <p id="delivery-fee-hint" class="cart-card__footer-hint">
+      <span class="cart-info-dot">i</span>
+      <span id="delivery-fee-hint-text">The delivery fee will be added to your total.</span>
+    </p>
+  </div>
+
+  <!-- CARD 2: CART ITEMS TABLE -->
+  <div class="cart-card cart-card--table">
+    <div class="cart-table-wrap">
+      <table class="cart-table">
+        <thead>
+          <tr>
+            <th>ITEM</th>
+            <th>RENTAL DATES</th>
+            <th>PRICE / DAY</th>
+            <th>QTY</th>
+            <th>SUBTOTAL</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="cart-items-body">
+{{#each items}}
+          <tr class="cart-row" id="cart-row-{{item_key}}">
+            <td class="cart-cell-item">
+              <input type="hidden" class="js-item-key" value="{{item_key}}" />
+              <input type="hidden" class="js-item-price" value="{{price_raw}}" />
+              <input type="hidden" class="js-item-max" value="{{max_stock}}" />
+              <div class="cart-item">
+                <div class="cart-item__thumb">
+                  <img src="{{image}}" alt="{{name}}" />
+                </div>
+                <div class="cart-item__meta">
+                  <p class="cart-item__name">{{name}}</p>
+                  <p class="cart-item__sub">{{subtitle}}</p>
+                </div>
+              </div>
+            </td>
+
+            <td class="cart-cell-dates">
+              <div class="cart-item-dates">
+                <div class="cart-item-dates__inputs">
+                  <input type="date" class="js-start-date" value="{{start_date}}" title="Tanggal mulai sewa" />
+                  <span>–</span>
+                  <input type="date" class="js-end-date" value="{{end_date}}" title="Tanggal selesai sewa" />
+                </div>
+                <span class="cart-item-dates__badge js-days-badge">{{date_range_label}} · {{days_label}}</span>
+              </div>
+            </td>
+
+            <td class="cart-cell-price">{{price_formatted}}</td>
+
+            <td class="cart-cell-qty">
+              <div class="cart-qty">
+                <button type="button" class="cart-qty__btn js-qty-minus" title="Kurangi jumlah">−</button>
+                <span class="cart-qty__val js-qty-val">{{qty}}</span>
+                <button type="button" class="cart-qty__btn js-qty-plus" title="Tambah jumlah">+</button>
+              </div>
+            </td>
+
+            <td class="cart-cell-subtotal js-row-subtotal">{{subtotal_formatted}}</td>
+
+            <td class="cart-cell-remove">
+              <button type="button" class="cart-remove-btn js-remove-item" title="Hapus item">
+                <span class="cart-trash-icon" aria-hidden="true"></span>
+              </button>
+            </td>
+          </tr>
+{{/each}}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- CARD 3: NOTES & SUMMARY (QRIS ONLY) -->
+  <div class="cart-card">
+    <div class="cart-bottom-grid">
+      <div class="cart-notes">
+        <h2 class="cart-card__title">Notes</h2>
+        <textarea id="cart-notes" name="catatan_pesanan" rows="7" title="Additional notes">{{order_notes}}</textarea>
+      </div>
+
+      <div class="cart-summary">
+        <h2 class="cart-card__title">Summary</h2>
+
+        <div class="cart-summary__rows">
+          <div class="cart-summary__row">
+            <span>Rental Subtotal</span>
+            <strong id="summary-subtotal">{{rental_subtotal_fmt}}</strong>
+          </div>
+          <div class="cart-summary__row">
+            <span>Delivery Fee</span>
+            <strong id="summary-delivery">{{delivery_fee_fmt}}</strong>
+          </div>
+          <div class="cart-summary__row">
+            <span>Tax 11%</span>
+            <strong id="summary-tax">{{tax_fmt}}</strong>
+          </div>
+        </div>
+
+        <div class="cart-summary__total-row">
+          <span>TOTAL</span>
+          <strong id="summary-total" class="cart-summary__total-amount">{{grand_total_fmt}}</strong>
+        </div>
+        <p class="cart-summary__tax-note">Tax is calculated on rental subtotal + delivery.</p>
+
+        <div class="cart-payment">
+          <p class="cart-payment__label">Payment Method</p>
+          <div class="cart-payment__only">
+            <span class="cart-payment__radio" aria-hidden="true"></span>
+            <div class="cart-payment__info">
+              <strong>QRIS</strong>
+              <span>Scan QR Code (GoPay, OVO, DANA, ShopeePay, Mobile Banking)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="cart-actions">
+          <button id="btn-whatsapp" type="button" class="cart-btn cart-btn--wa">Order via WhatsApp</button>
+          <button id="btn-checkout" type="button" class="cart-btn cart-btn--checkout"{{disabled_attr}}>→ Checkout</button>
+        </div>
+
+        {{{guest_checkout_note}}}
+      </div>
+    </div>
+  </div>
+
+  <div class="cart-continue">
+    <a href="product.php">← Continue browsing gear</a>
+  </div>
+  {{/if}}
+
+  <!-- QRIS PAYMENT POPUP MODAL -->
+  <div id="qris-modal" class="qris-modal" aria-hidden="true">
+    <div id="qris-backdrop" class="qris-modal__backdrop"></div>
+    <div class="qris-modal__dialog" role="dialog" aria-modal="true" aria-labelledby="qris-modal-title">
+      <div class="qris-modal__head">
+        <div>
+          <h3 id="qris-modal-title" class="qris-modal__title">Pembayaran QRIS</h3>
+          <p class="qris-modal__sub">Scan QRIS di bawah ini untuk menyelesaikan pembayaran sewa</p>
+        </div>
+        <button id="qris-close-btn" type="button" class="qris-modal__close" title="Tutup">×</button>
+      </div>
+
+      <div id="qris-step-pay" class="qris-modal__body">
+        <div class="qris-modal__amount-box">
+          <span>Total Pembayaran</span>
+          <strong id="qris-total-amount">{{grand_total_fmt}}</strong>
+        </div>
+
+        <div class="qris-modal__code">
+          <!-- =====================================================================
+               MANUAL QRIS IMAGE INSERTION POINT:
+               Insert or replace the QRIS image path (src="...") or custom QRIS
+               markup right below this comment.
+               ===================================================================== -->
+          <img src="{{asset.qris}}" alt="QRIS CampRent Payment" class="qris-modal__img" />
+        </div>
+
+        <p class="qris-modal__hint">Menerima pembayaran QRIS dari GoPay, OVO, DANA, ShopeePay, BCA, Mandiri, BNI, BRI, dan bank lainnya.</p>
+
+        <div class="qris-modal__actions">
+          <button id="qris-cancel-btn" type="button" class="cart-btn cart-btn--draft">Batal</button>
+          <button id="qris-confirm-btn" type="button" class="cart-btn cart-btn--checkout">Saya Sudah Bayar</button>
+        </div>
+      </div>
+
+      <div id="qris-step-done" class="qris-modal__body qris-modal__done is-hidden">
+        <div class="qris-done__badge">✓</div>
+        <h4 class="qris-done__title">Pembayaran QRIS Berhasil!</h4>
+        <p class="qris-done__desc">Pesanan sewa perlengkapan camping kamu telah dicatat dan sedang menunggu konfirmasi tim CampRent.</p>
+        <div class="qris-done__code-box">
+          <span>Kode Transaksi</span>
+          <strong id="qris-tx-code">-</strong>
+        </div>
+        <a href="index.php" class="cart-btn cart-btn--checkout qris-done__btn">Kembali ke Beranda</a>
+      </div>
+    </div>
+  </div>
+</div>

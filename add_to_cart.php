@@ -76,31 +76,45 @@ if (!$variant) {
     reply(false, $product['nama_produk'] . ' is out of stock.', 409, $is_ajax);
 }
 
-// 3. Find this user's cart, or create one
-$id_cart = db_query('SELECT id_cart FROM carts WHERE id_user = ?', [$id_user])->fetchColumn();
-if (!$id_cart) {
-    db_query('INSERT INTO carts (id_user) VALUES (?)', [$id_user]);
-    $id_cart = $pdo->lastInsertId();       // the number the database just gave the new cart
-}
+// 3. Save to MySQL for logged-in users, or to $_SESSION['guest_cart'] for guests
+if ($id_user > 0) {
+    $id_cart = db_query('SELECT id_cart FROM carts WHERE id_user = ?', [$id_user])->fetchColumn();
+    if (!$id_cart) {
+        db_query('INSERT INTO carts (id_user, metode_pembayaran) VALUES (?, ?)', [$id_user, 'QRIS']);
+        $id_cart = $pdo->lastInsertId();
+    }
 
-// 4. Is this product already in the cart?
-$item = db_query(
-    'SELECT id_cart_item, qty FROM cart_items WHERE id_cart = ? AND id_product = ? AND id_variant = ?',
-    [$id_cart, $id_product, $variant['id_variant']]
-)->fetch();
+    $item = db_query(
+        'SELECT id_cart_item, qty FROM cart_items WHERE id_cart = ? AND id_product = ? AND id_variant = ?',
+        [$id_cart, $id_product, $variant['id_variant']]
+    )->fetch();
 
-if ($item) {
-    // Yes: add one more, but never more than the stock
-    if ($item['qty'] + 1 > $variant['stok_tersedia']) {
+    if ($item) {
+        if ($item['qty'] + 1 > $variant['stok_tersedia']) {
+            reply(false, 'Only ' . $variant['stok_tersedia'] . ' available for ' . $product['nama_produk'] . '.', 409, $is_ajax);
+        }
+        db_query('UPDATE cart_items SET qty = qty + 1 WHERE id_cart_item = ?', [$item['id_cart_item']]);
+    } else {
+        db_query(
+            'INSERT INTO cart_items (id_cart, id_product, id_variant, qty) VALUES (?, ?, ?, 1)',
+            [$id_cart, $id_product, $variant['id_variant']]
+        );
+    }
+} else {
+    $guestCart = get_guest_cart();
+    $key = $id_product . '_' . $variant['id_variant'];
+    $currentQty = isset($guestCart[$key]) ? (int) $guestCart[$key]['qty'] : 0;
+
+    if ($currentQty + 1 > $variant['stok_tersedia']) {
         reply(false, 'Only ' . $variant['stok_tersedia'] . ' available for ' . $product['nama_produk'] . '.', 409, $is_ajax);
     }
-    db_query('UPDATE cart_items SET qty = qty + 1 WHERE id_cart_item = ?', [$item['id_cart_item']]);
-} else {
-    // No: add a new line with quantity 1
-    db_query(
-        'INSERT INTO cart_items (id_cart, id_product, id_variant, qty) VALUES (?, ?, ?, 1)',
-        [$id_cart, $id_product, $variant['id_variant']]
-    );
+
+    $guestCart[$key] = [
+        'id_product' => $id_product,
+        'id_variant' => (int) $variant['id_variant'],
+        'qty'        => $currentQty + 1,
+    ];
+    save_guest_cart($guestCart);
 }
 
 reply(true, $product['nama_produk'] . ' added to cart.', 200, $is_ajax);

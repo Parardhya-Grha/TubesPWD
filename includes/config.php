@@ -37,6 +37,7 @@ const ASSET = [
     'arrow_back' => 'Images/arrow-back.svg',
     'hero'       => 'Images/camp.jpg',
     'hero_dots'  => 'assets/hero-dots.svg',
+    'qris'       => 'Images/qris-qweh.jpeg',
     'instagram'  => 'Images/Instagram--Streamline-Atlas 1.svg',
     'whatsapp'   => 'Images/Whatsapp--Streamline-Atlas 1.svg',
     'tiktok'     => 'Images/Tiktok--Streamline-Atlas 1.svg',

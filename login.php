@@ -41,7 +41,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['username']     = $user['username'];
                 $_SESSION['role']         = $user['role'];
 
-                header('Location: index.php');
+                merge_guest_cart_to_user((int) $user['id_user']);
+
+                $redirect = 'index.php';
+                $requestedRedirect = (string) ($_GET['redirect'] ?? $_POST['redirect'] ?? '');
+                if (in_array($requestedRedirect, ['index.php', 'cart.php', 'product.php'], true)) {
+                    $redirect = $requestedRedirect;
+                }
+
+                header('Location: ' . $redirect);
                 exit;
             }
         }
