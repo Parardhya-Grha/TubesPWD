@@ -28,7 +28,7 @@
           <form class="search" action="product.php" method="get">
             <div>
               <img class="search__icon" src="{{asset.search}}" alt="" width="17" height="17" />
-              <input id="search-input" type="text" name="q" value="{{search}}" title="Cari produk" />
+              <input id="search-input" type="text" name="q" value="{{search_text}}" title="Cari produk" />
             </div>
           </form>
           <a class="icon-link" href="#" title="Notifications"><img src="{{asset.bell}}" alt="" width="24" height="24" /></a>
@@ -76,7 +76,7 @@
     </div>
   </div>
 
-  <!-- Message shown after Add to Cart (also used by listing.js) -->
+  <!-- Message shown after Add to Cart (listing.js also uses it) -->
   <div id="toast" class="toast{{#if toast_visible}} is-visible{{/if}}{{#if toast_error}} toast--error{{/if}}">{{toast_text}}</div>
 
   <script type="text/javascript" src="js/script.js"></script>

@@ -7,7 +7,7 @@
       <p class="page-count">Showing {{total}} product{{#if plural}}s{{/if}}{{#if q}} for &#8220;{{q}}&#8221;{{/if}}</p>
     </div>
 
-    <!-- QUICK CATEGORIES -->
+    <!-- QUICK CATEGORIES (click one to filter, click again to clear) -->
     <div class="quick-cats">
 {{#each quick_cats}}
       <a class="quick-cat{{#if active}} is-active{{/if}}" href="{{url}}">
@@ -59,9 +59,9 @@
       <div class="pagination__pages">
 {{#each page_links}}
 {{#if is_link}}
-        <a class="page-link" href="{{url}}"{{#if title}} title="{{title}}"{{/if}}>{{label}}</a>
+        <a class="page-link" href="{{url}}"{{{title_attr}}}>{{label}}</a>
 {{else}}
-        <span class="page-link{{#if is_current}} is-current{{/if}}{{#if is_disabled}} is-disabled{{/if}}">{{label}}</span>
+        <span class="{{css_class}}">{{label}}</span>
 {{/if}}
 {{/each}}
       </div>

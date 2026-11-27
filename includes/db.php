@@ -1,47 +1,38 @@
 <?php
+// db.php - connects to the database. Every page that needs data loads this file.
 require_once __DIR__ . '/config.php';
 
-/**
- * Shared PDO connection (prepared statements everywhere).
- * CAMPRENT_DSN is an optional override, only used for automated tests.
- */
-function db(): PDO
-{
-    static $pdo = null;
-    if ($pdo !== null) {
-        return $pdo;
-    }
-
-    $dsn = getenv('CAMPRENT_DSN') ?: sprintf(
-        'mysql:host=%s;dbname=%s;charset=%s',
-        DB_HOST,
-        DB_NAME,
-        DB_CHARSET
-    );
-
-    try {
-        $pdo = new PDO($dsn, DB_USER, DB_PASS, [
-            PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
-            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-            PDO::ATTR_EMULATE_PREPARES   => false,
-        ]);
-    } catch (PDOException $e) {
-        error_log('CampRent DB connection failed: ' . $e->getMessage());
-        http_response_code(500);
-        header('Content-Type: text/plain; charset=UTF-8');
-        exit('Database connection failed. Check includes/config.php and that MySQL/MariaDB is running.');
-    }
-
-    return $pdo;
+// Normally we connect to MySQL using the settings in config.php.
+// (The CAMPRENT_DSN line only exists so I could test with another database.
+//  You can delete the "if" block below and keep just $dsn = "mysql:...".)
+$dsn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME . ';charset=' . DB_CHARSET;
+if (getenv('CAMPRENT_DSN')) {
+    $dsn = getenv('CAMPRENT_DSN');
 }
 
-/** Run a prepared query. Integers are bound as integers (needed for LIMIT/OFFSET). */
-function db_query(string $sql, array $params = []): PDOStatement
+try {
+    // $pdo is the open connection. All the functions below use it.
+    $pdo = new PDO($dsn, DB_USER, DB_PASS);
+    // Show real error messages while you are learning
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    // Give each row back as ['nama_produk' => '...'] (a named array)
+    $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+} catch (PDOException $error) {
+    http_response_code(500);
+    exit('Database connection failed. Check includes/config.php and that MySQL is running.');
+}
+
+/*
+ * db_query() runs one SQL query.
+ *   $sql    = the SQL text, with ? where a value goes
+ *   $values = the values for the ? marks, in order
+ * Sending values separately (instead of pasting them into the SQL text)
+ * stops "SQL injection", so always do it this way for anything a visitor types.
+ */
+function db_query($sql, $values = [])
 {
-    $st = db()->prepare($sql);
-    foreach (array_values($params) as $i => $value) {
-        $st->bindValue($i + 1, $value, is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR);
-    }
-    $st->execute();
-    return $st;
+    global $pdo;                 // "global" lets this function use the $pdo made above
+    $statement = $pdo->prepare($sql);
+    $statement->execute($values);
+    return $statement;
 }
