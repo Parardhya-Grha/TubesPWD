@@ -6,3 +6,4 @@ Teams:
 3. Miracle Careen Wongkar / 250713325
 4. Parardhya Grhasenctia Buty Jayawardhana / 250713348
 5. Yohanes Krisostomus Wora / 250713311
+Special Thanks: my most beloved claude lop lop 😍😍(fakyou gemini)

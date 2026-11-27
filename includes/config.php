@@ -15,6 +15,8 @@ define('DB_CHARSET', 'utf8mb4');
  * When a login page exists, it only has to set $_SESSION['id_user'].
  */
 define('DEMO_USER_ID', 2);
+/** Secret salt kept only in PHP (never stored in the database). */
+define('AUTH_SALT', 'CampRent#2026!SecretSalt');
 
 /** Products per page on product.php (4 columns x 3 rows, like the design). */
 define('PER_PAGE', 12);
@@ -32,6 +34,7 @@ const ASSET = [
     'star'       => 'Images/star.svg',
     'sliders'    => 'Images/sliders.svg',
     'arrow'      => 'Images/arrow_back_ios.svg',
+    'arrow_back' => 'Images/arrow-back.svg',
     'hero'       => 'Images/camp.jpg',
     'hero_dots'  => 'assets/hero-dots.svg',
     'instagram'  => 'Images/Instagram--Streamline-Atlas 1.svg',

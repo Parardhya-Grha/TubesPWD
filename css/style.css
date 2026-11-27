@@ -141,6 +141,21 @@ h2, h3, h4, p { margin: 0; }
 
 .icon-link { position: relative; display: block; flex: none; }
 
+.profile-initials {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: #fff;
+  font-family: "Inter", sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.4px;
+}
+
 .cart__badge {
   position: absolute;
   top: -9px;

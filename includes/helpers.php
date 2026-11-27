@@ -3,7 +3,14 @@
 require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/db.php';
 
-session_start();   // lets us remember things between page loads (cart message, security token)
+if (session_status() === PHP_SESSION_NONE) {
+    session_start([
+        'cookie_lifetime' => 0,
+        'cookie_path'     => '/',
+        'cookie_httponly' => true,
+        'cookie_samesite' => 'Lax',
+    ]);
+}
 
 /* ---------- Fixed lists used by the filters ---------- */
 
@@ -295,6 +302,29 @@ function current_user_id()
         return (int) $_SESSION['id_user'];
     }
     return DEMO_USER_ID;
+}
+
+function is_logged_in()
+{
+    return isset($_SESSION['id_user']) && (int) $_SESSION['id_user'] > 0;
+}
+
+function user_initials()
+{
+    if (!is_logged_in()) {
+        return '';
+    }
+    $name = trim((string) ($_SESSION['nama_lengkap'] ?? ''));
+    if ($name === '') {
+        $name = trim((string) ($_SESSION['username'] ?? 'U'));
+    }
+    $parts = preg_split('/\s+/', $name);
+    if (count($parts) >= 2) {
+        $initials = mb_substr($parts[0], 0, 1, 'UTF-8') . mb_substr($parts[1], 0, 1, 'UTF-8');
+    } else {
+        $initials = mb_substr($parts[0], 0, 2, 'UTF-8');
+    }
+    return mb_strtoupper($initials, 'UTF-8');
 }
 
 // Total number of items in the cart (shown in the little yellow badge)
