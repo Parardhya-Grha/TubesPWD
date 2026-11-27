@@ -1,0 +1,144 @@
+
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/profile.css">
+
+<div class="profile-page">
+    <aside class="profile-sidebar">
+        <div class="profile-sidebar__user">
+            <div class="profile-avatar">
+                <span>👤</span>
+            </div>
+
+            <div class="profile-user-info">
+                <strong>{{username}}</strong>
+            </div>
+        </div>
+
+        <div class="profile-sidebar__menu">
+            <div class="profile-menu-heading">Akun Saya</div>
+
+            <a href="profile.php" class="profile-menu">
+                Profil
+            </a>
+
+            <a href="edit_profile.php" class="profile-menu active">
+                Edit Profil
+            </a>
+
+            <a href="#" class="profile-menu">
+                Ubah Password
+            </a>
+
+            <div class="profile-menu-heading profile-activity-heading">
+                <span>▣</span> Aktivitas Sewa
+            </div>
+
+            <a href="#" class="profile-menu">
+                Riwayat Sewa
+            </a>
+
+            <a href="#" class="profile-menu">
+                Pengembalian Alat
+            </a>
+
+            <form action="logout.php" method="post" class="profile-logout">
+                <input type="hidden" name="csrf" value="{{csrf}}" />
+                <button type="submit">
+                    <span>↪</span> Keluar
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <main class="profile-content">
+        <div class="profile-card">
+            <h1>Profil Saya — Edit</h1>
+
+            <p class="profile-description">
+                Kelola informasi profil Anda untuk mempermudah
+                proses penyewaan alat outdoor.
+            </p>
+
+            <div class="profile-details-layout">
+                <form action="edit_profile.php" method="post" class="profile-information profile-edit-form">
+
+                    <input type="hidden" name="csrf" value="{{csrf}}">
+
+                    <div class="profile-information__row">
+                        <label for="username">Username</label>
+                        <input type="text" id="username" name="username"
+                            value="{{username}}" required>
+                    </div>
+
+                    <div class="profile-information__row">
+                        <label for="nama_lengkap">Nama Lengkap</label>
+                        <input type="text" id="nama_lengkap" name="nama_lengkap"
+                            value="{{nama_lengkap}}" required>
+                    </div>
+
+                    <div class="profile-information__row">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email"
+                            value="{{email}}" required>
+                    </div>
+
+                    <div class="profile-information__row">
+                        <label for="no_hp">Nomor WhatsApp</label>
+                        <input type="text" id="no_hp" name="no_hp"
+                            value="{{no_hp}}" required>
+                    </div>
+
+                    <div class="profile-information__row">
+                        <label>Jenis Kelamin</label>
+
+                        <div class="profile-gender">
+                            <label>
+                                <input type="radio" name="jenis_kelamin"
+                                    value="Laki-laki" {{jenis_kelamin_laki}}>
+                                Laki-laki
+                            </label>
+
+                            <label>
+                                <input type="radio" name="jenis_kelamin"
+                                    value="Perempuan" {{jenis_kelamin_perempuan}}>
+                                Perempuan
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="profile-information__row">
+                        <label for="tanggal_lahir">Tanggal Lahir</label>
+                        <input type="date" id="tanggal_lahir"
+                            name="tanggal_lahir" value="{{tanggal_lahir}}">
+                    </div>
+
+                    <div class="profile-information__row">
+                        <label for="alamat_default">Alamat Utama</label>
+                        <textarea id="alamat_default" name="alamat_default"
+                            rows="3">{{alamat_default}}</textarea>
+                    </div>
+
+                    <div class="profile-form-actions">
+                        <button type="submit" class="profile-save-button">
+                            Simpan Perubahan
+                        </button>
+
+                        <a href="profile.php" class="profile-cancel-button">
+                            Batal
+                        </a>
+                    </div>
+                </form>
+
+                <div class="profile-photo-area">
+                    <div class="profile-photo">
+                        <span>👤</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="profile-error">
+                {{error}}
+            </div>
+        </div>
+    </main>
+</div>

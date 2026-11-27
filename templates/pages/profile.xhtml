@@ -1,0 +1,109 @@
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/profile.css">
+<div class="profile-page">
+    <aside class="profile-sidebar">
+        <div class="profile-sidebar__user">
+            <div class="profile-avatar">
+                <span>👤</span>
+            </div>
+
+            <div class="profile-user-info">
+                <strong>{{profile_username}}</strong>
+            </div>
+        </div>
+
+        <div class="profile-sidebar__menu">
+            <div class="profile-menu-heading">Akun Saya</div>
+
+            <a href="profile.php" class="profile-menu active">
+                Profil
+            </a>
+
+            <a href="#" class="profile-menu">
+                Ubah Password
+            </a>
+
+            <div class="profile-menu-heading profile-activity-heading">
+                <span>▣</span> Aktivitas Sewa
+            </div>
+
+            <a href="#" class="profile-menu">
+                Riwayat Sewa
+            </a>
+
+            <a href="#" class="profile-menu">
+                Pengembalian Alat
+            </a>
+
+            <form action="logout.php" method="post" class="profile-logout">
+                <input type="hidden" name="csrf" value="{{csrf}}" />
+
+                <button type="submit">
+                    <span>↪</span> Keluar
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <main class="profile-content">
+        <div class="profile-card">
+            <h1>Profil Saya</h1>
+
+            <p class="profile-description">
+                Kelola informasi profil Anda untuk mempermudah
+                proses penyewaan alat outdoor.
+            </p>
+
+            <div class="profile-details-layout">
+                <div class="profile-information">
+
+                    <div class="profile-information__row">
+                        <span>Username</span>
+                        <strong>{{profile_username}}</strong>
+                    </div>
+
+                    <div class="profile-information__row">
+                        <span>Nama Lengkap</span>
+                        <strong>{{profile_name}}</strong>
+                    </div>
+
+                    <div class="profile-information__row">
+                        <span>Email</span>
+                        <strong>{{profile_email}}</strong>
+                    </div>
+
+                    <div class="profile-information__row">
+                        <span>Nomor WhatsApp</span>
+                        <strong>{{profile_phone}}</strong>
+                    </div>
+
+                    <div class="profile-information__row">
+                        <span>Jenis Kelamin</span>
+                        <strong>{{profile_gender}}</strong>
+                    </div>
+
+                    <div class="profile-information__row">
+                        <span>Tanggal Lahir</span>
+                        <strong>{{profile_birthdate}}</strong>
+                    </div>
+
+                    <div class="profile-information__row">
+                        <span>Alamat Utama</span>
+                        <strong>{{profile_address}}</strong>
+                    </div>
+
+                </div>
+
+                <div class="profile-photo-area">
+                    <div class="profile-photo">
+                        <span>👤</span>
+                    </div>
+                </div>
+            </div>
+
+            <a href="#" class="profile-edit-button">
+                Edit Profil
+            </a>
+        </div>
+    </main>
+</div>
