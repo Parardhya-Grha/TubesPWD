@@ -69,11 +69,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             global $pdo;
             $newUserId = (int) $pdo->lastInsertId();
 
-            session_regenerate_id(true);
+           session_regenerate_id(true);
             $_SESSION['id_user']      = $newUserId;
             $_SESSION['nama_lengkap'] = $namaLengkap;
             $_SESSION['username']     = $username;
             $_SESSION['role']         = 'customer';
+
+            merge_guest_cart_to_user($newUserId);
 
             header('Location: index.php');
             exit;
