@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="id" lang="id">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Masuk – CampRent</title>
+  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Roboto:wght@700&display=swap" />
+  <link rel="stylesheet" type="text/css" href="css/auth.css" />
+</head>
+<body>
+  <div class="auth">
+    <div class="auth__hero">
+      <img class="auth__hero-img" src="{{hero_img}}" alt="CampRent Outdoor" />
+      <div class="auth__hero-brand">Camp<br />Rent</div>
+    </div>
+
+    <div class="auth__panel">
+      <div class="auth__top">
+        <a class="auth__back" href="index.php"><img src="{{asset.arrow_back}}" alt="" width="16" height="16" />Kembali ke Halaman Utama</a>
+      </div>
+
+      <div class="auth__box">
+        <h1 class="auth__title auth__title--center">Masuk atau Daftar Akun</h1>
+
+        {{{alert}}}
+
+        <form class="auth-form" action="login.php" method="post">
+          <div class="auth-form__body">
+            <input type="hidden" name="csrf" value="{{csrf}}" />
+
+            <div class="auth-field">
+              <label for="login-email">Email</label>
+              <input id="login-email" type="text" name="email" value="{{email}}" title="Email" />
+            </div>
+
+            <div class="auth-field">
+              <label for="login-password">Password</label>
+              <div class="auth-password">
+                <input id="login-password" type="password" name="password" title="Password" />
+                <button type="button" class="auth-password__toggle" title="Tampilkan password"><span class="auth-eye"></span></button>
+              </div>
+              <div class="auth-field__extra">
+                <a class="auth-forgot" href="register.php">Lupa Password?</a>
+              </div>
+            </div>
+
+            <button class="auth-btn" type="submit">Masuk</button>
+          </div>
+        </form>
+
+        <p class="auth__switch">Belum punya Akun? <a href="register.php">Daftar Sekarang</a></p>
+      </div>
+    </div>
+  </div>
+
+  <script type="text/javascript" src="js/auth.js"></script>
+</body>
+</html>
