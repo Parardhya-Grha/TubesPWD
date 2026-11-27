@@ -1,0 +1,106 @@
+<div class="ph-page">
+
+    <div class="ph-heading">
+        <h1>Riwayat Penyewaan</h1>
+        <p>Daftar transaksi penyewaan perlengkapan camping Anda.</p>
+    </div>
+
+    {{#if has_history}}
+
+    {{#each history}}
+
+    <div class="ph-history-card">
+
+        <div class="ph-history-header">
+            <div>
+                <span class="ph-small">Kode Transaksi</span>
+                <h3>{{kode_transaksi}}</h3>
+            </div>
+
+            <span class="ph-status">{{status_sewa}}</span>
+        </div>
+
+        <div class="ph-grid">
+
+            <div>
+                <span class="ph-small">Tanggal Mulai</span>
+                <strong>{{tanggal_mulai}}</strong>
+            </div>
+
+            <div>
+                <span class="ph-small">Tanggal Selesai</span>
+                <strong>{{tanggal_selesai}}</strong>
+            </div>
+
+            <div>
+                <span class="ph-small">Durasi</span>
+                <strong>{{durasi}} Hari</strong>
+            </div>
+
+            <div>
+                <span class="ph-small">Metode Pembayaran</span>
+                <strong>{{metode}}</strong>
+            </div>
+
+            <div>
+                <span class="ph-small">Status Pembayaran</span>
+                <strong>{{status_pembayaran}}</strong>
+            </div>
+
+        </div>
+
+        <h4>Barang yang Disewa</h4>
+
+        {{{items_html}}}
+
+        <div class="ph-summary">
+
+            <div>
+                <span>Subtotal Sewa</span>
+                <strong>{{subtotal}}</strong>
+            </div>
+
+            <div>
+                <span>Biaya Pengiriman</span>
+                <strong>{{pengiriman}}</strong>
+            </div>
+
+            <div>
+                <span>Biaya Layanan</span>
+                <strong>{{layanan}}</strong>
+            </div>
+
+            <div class="ph-total">
+                <span>Total Pembayaran</span>
+                <strong>{{total}}</strong>
+            </div>
+
+        </div>
+
+        <div class="ph-address">
+            <span class="ph-small">Alamat Pengiriman</span>
+            <p>{{alamat}}</p>
+        </div>
+
+        {{#if catatan}}
+        <div class="ph-address">
+            <span class="ph-small">Catatan Pesanan</span>
+            <p>{{catatan}}</p>
+        </div>
+        {{/if}}
+
+    </div>
+
+    {{/each}}
+
+    {{else}}
+
+    <div class="ph-empty">
+        <h2>Belum Ada Riwayat Penyewaan</h2>
+        <p>Anda belum melakukan transaksi penyewaan.</p>
+        <a href="product.php" class="ph-button">Mulai Menyewa</a>
+    </div>
+
+    {{/if}}
+
+</div>
