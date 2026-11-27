@@ -1,12 +1,8 @@
-<?php
-// select.xhtml - one dropdown of the filter bar.
-// Needs: $name, $label, $options (value => text), $selected, $show_blank
-?>
-        <div class="select"><select name="<?= e($name) ?>" title="<?= e($label) ?>">
-<?php if ($show_blank) { ?>
-          <option value=""><?= e($label) ?></option>
-<?php } ?>
-<?php foreach ($options as $value => $text) { ?>
-          <option value="<?= e($value) ?>"<?php if ((string) $value == $selected) { echo ' selected="selected"'; } ?>><?= e($text) ?></option>
-<?php } ?>
+        <div class="select"><select name="{{name}}" title="{{label}}">
+{{#if placeholder}}
+          <option value="">{{label}}</option>
+{{/if}}
+{{#each options}}
+          <option value="{{value}}"{{#if selected}} selected="selected"{{/if}}>{{label}}</option>
+{{/each}}
         </select></div>

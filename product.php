@@ -1,8 +1,8 @@
 <?php
 // product.php - the ALL PRODUCTS page.
 // Step 1: read what the visitor chose.  Step 2: ask the database.
-// Step 3: show the page (header + products.xhtml + footer).
-require_once __DIR__ . '/includes/helpers.php';
+// Step 3: turn the data into XHTML pieces and show the page.
+require_once __DIR__ . '/includes/view.php';
 
 // ----- Step 1: filters from the address bar -----
 $f = read_filters();
@@ -55,11 +55,30 @@ foreach ($SORTS as $key => $sort) {
     $sort_options[$key] = $sort[0];
 }
 
-// ----- Step 3: show the page -----
-$page_title = 'All Products – CampRent';
-$active_menu = '/products';
-$search_text = $f['q'];
+// ----- Step 3: prepare the values the template needs -----
+// "1 product" but "2 products"
+$plural = ($total != 1);
 
-include __DIR__ . '/templates/header.xhtml';
-include __DIR__ . '/templates/products.xhtml';
-include __DIR__ . '/templates/footer.xhtml';
+// The five filter dropdowns (the sort dropdown is separate, and has no empty first choice)
+$filters = [
+    select_data('cat',   'Category',      $category_options, $f['cat'],   true),
+    select_data('price', 'Price',         $price_options,    $f['price'], true),
+    select_data('brand', 'Brand',         $brand_options,    $f['brand'], true),
+    select_data('size',  'Size/Capacity', $size_options,     $f['size'],  true),
+    select_data('avail', 'Availability',  $AVAILABILITY,     $f['avail'], true),
+];
+
+// ----- Step 4: fill the page template and show it -----
+show_page('products', [
+    'total'       => $total,
+    'plural'      => $plural,
+    'q'           => $f['q'],
+    'quick_cats'  => quick_cats_data($categories, $f),
+    'filters'     => $filters,
+    'has_filters' => has_filters($f),
+    'sort'        => select_data('sort', 'Newest', $sort_options, $f['sort'], false),
+    'products'    => cards_data($products, true),
+    'from'        => $from,
+    'to'          => $to,
+    'page_links'  => page_links_data($f, $page, $total_pages),
+], 'All Products – CampRent', '/products', $f['q']);

@@ -1,19 +1,11 @@
-<?php
-// review.xhtml - ONE review card. Needs: $r (one review row from the database).
-
-$rating = (int) $r['rating'];
-if ($rating < 0) { $rating = 0; }          // keep the number between 0 and 5
-if ($rating > 5) { $rating = 5; }
-$initial = mb_strtoupper(mb_substr($r['nama_lengkap'], 0, 1));   // first letter of the name
-?>
         <div class="review">
           <div class="review__head">
-            <span class="review__avatar review__avatar--initial"><?= e($initial) ?></span>
+            <span class="review__avatar review__avatar--initial">{{initial}}</span>
             <div class="review__who">
-              <p class="review__name"><?= e($r['nama_lengkap']) ?></p>
-              <p class="review__meta"><img src="<?= ASSET['star'] ?>" alt="" width="5" height="5" /> <?= e($r['nama_produk']) ?> &#8226; <span class="review__date"><?= e(indo_date($r['created_at'])) ?></span></p>
+              <p class="review__name">{{name}}</p>
+              <p class="review__meta"><img src="{{asset.star}}" alt="" width="5" height="5" /> {{product}} &#8226; <span class="review__date">{{date}}</span></p>
             </div>
           </div>
-          <div class="rating" style="--rating: <?= $rating ?>" title="<?= $rating ?> dari 5"></div>
-          <p class="review__text"><?= e($r['komentar']) ?></p>
+          <div class="rating" style="--rating: {{rating}}" title="{{rating}} dari 5"></div>
+          <p class="review__text">{{comment}}</p>
         </div>

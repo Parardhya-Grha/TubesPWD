@@ -1,6 +1,6 @@
 <?php
 // index.php - the homepage. Categories, products and reviews come from the database.
-require_once __DIR__ . '/includes/helpers.php';
+require_once __DIR__ . '/includes/view.php';
 
 $f = read_filters();                       // no filters chosen = everything
 
@@ -24,11 +24,20 @@ $sql = 'SELECT r.rating, r.komentar, r.created_at, u.nama_lengkap, p.nama_produk
         LIMIT 10';
 $reviews = db_query($sql)->fetchAll();
 
-// Show the page
-$page_title = 'CampRent';
-$active_menu = '';
-$search_text = '';
+// One link per category (the small picture buttons under the hero)
+$category_links = [];
+foreach ($categories as $c) {
+    $category_links[] = [
+        'url'  => 'product.php?cat=' . urlencode($c['slug_kategori']),
+        'icon' => img_path($c['icon_url']),
+        'name' => $c['nama_kategori'],
+    ];
+}
 
-include __DIR__ . '/templates/header.xhtml';
-include __DIR__ . '/templates/home.xhtml';
-include __DIR__ . '/templates/footer.xhtml';
+// Fill the page template and show it
+show_page('home', [
+    'categories' => $category_links,
+    'popular'    => carousel_data('PRODUK POPULER', 'popular', $popular),
+    'newest'     => carousel_data('PRODUK TERBARU', 'newest', $newest),
+    'reviews'    => reviews_data($reviews),
+], 'CampRent', '', '');
