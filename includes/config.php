@@ -37,9 +37,15 @@ const ASSET = [
     'arrow_back' => 'Images/arrow-back.svg',
     'hero'       => 'Images/camp.jpg',
     'hero_dots'  => 'assets/hero-dots.svg',
-    'qris'       => 'Images/qris-qweh.jpeg',
     'instagram'  => 'Images/Instagram--Streamline-Atlas 1.svg',
     'whatsapp'   => 'Images/Whatsapp--Streamline-Atlas 1.svg',
     'tiktok'     => 'Images/Tiktok--Streamline-Atlas 1.svg',
     'facebook'   => 'Images/Facebook--Streamline-Atlas 1.svg',
+    // Support page: icons of "Syarat & Ketentuan Sewa" (the first icon is drawn from 3 parts)
+    'term_id_1'  => 'Images/support-identity-1.svg',
+    'term_id_2'  => 'Images/support-identity-2.svg',
+    'term_id_3'  => 'Images/support-identity-3.svg',
+    'term_clock' => 'Images/support-clock.svg',
+    'term_shield'=> 'Images/support-shield.svg',
+    'term_phone' => 'Images/support-phone.svg',
 ];

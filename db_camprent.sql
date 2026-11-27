@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 27, 2026 at 08:58 PM
+-- Generation Time: Nov 26, 2026 at 06:37 PM
 -- Server version: 10.11.16-MariaDB
 -- PHP Version: 8.5.12
 
@@ -69,8 +69,7 @@ CREATE TABLE `carts` (
 --
 
 INSERT INTO `carts` (`id_cart`, `id_user`, `tanggal_mulai_sewa`, `durasi_hari`, `alamat_pengiriman`, `catatan_kurir`, `catatan_pesanan`, `metode_pembayaran`, `updated_at`) VALUES
-(1, 2, '2026-11-28', 3, 'Jl. Babarsari No. 43, Depok, Sleman, Yogyakarta', 'Titip di pos satpam jika belum di tempat', 'Mohon cek resleting tenda dan carrier sebelum dikirim', 'Bank Transfer', '2026-11-25 06:42:02'),
-(2, 1, NULL, 1, NULL, NULL, NULL, 'Bank Transfer', '2026-11-27 18:50:52');
+(1, 2, '2026-11-28', 3, 'Jl. Babarsari No. 43, Depok, Sleman, Yogyakarta', 'Titip di pos satpam jika belum di tempat', 'Mohon cek resleting tenda dan carrier sebelum dikirim', 'Bank Transfer', '2026-11-25 06:42:02');
 
 -- --------------------------------------------------------
 
@@ -94,9 +93,7 @@ INSERT INTO `cart_items` (`id_cart_item`, `id_cart`, `id_product`, `id_variant`,
 (1, 1, 1, 1, 1),
 (2, 1, 4, 5, 1),
 (3, 1, 10, 12, 1),
-(4, 1, 2, 3, 1),
-(5, 1, 13, 16, 1),
-(6, 2, 2, 3, 1);
+(4, 1, 2, 3, 1);
 
 -- --------------------------------------------------------
 
@@ -344,7 +341,6 @@ INSERT INTO `site_menus` (`id_menu`, `nama_menu`, `url_slug`, `urutan`, `is_acti
 CREATE TABLE `users` (
   `id_user` int(10) UNSIGNED NOT NULL,
   `nama_lengkap` varchar(100) NOT NULL,
-  `username` varchar(50) NOT NULL,
   `email` varchar(100) NOT NULL,
   `no_hp` varchar(20) NOT NULL,
   `password_hash` varchar(255) NOT NULL,
@@ -357,10 +353,10 @@ CREATE TABLE `users` (
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id_user`, `nama_lengkap`, `username`, `email`, `no_hp`, `password_hash`, `role`, `alamat_default`, `created_at`) VALUES
-(1, 'Admin CampRent', 'admin', 'admin@camprent.id', '081234567890', '9dc55c7f356bd3dfe9f3674de184879d818833405e201c9602a8ad117d45d055', 'admin', 'Basecamp CampRent Yogyakarta', '2026-11-25 06:42:02'),
-(2, 'Dio Aja', 'dioaja', 'dio@example.com', '082372344546', '540e358bbd6e01967c331f181e4c5081bf03948a8a1c8c0b03dd7324658ea83a', 'customer', 'Jl. Babarsari No. 12, Depok, Sleman, Yogyakarta', '2026-11-25 06:42:02'),
-(3, 'Si Yohwora', 'siyohwora', 'yohwora@example.com', '082149736370', '040577701af83cdb9d641070df781965466da0740da6fd5430a821d84d93e677', 'customer', 'komp Yadara blok IV', '2026-11-25 06:42:02');
+INSERT INTO `users` (`id_user`, `nama_lengkap`, `email`, `no_hp`, `password_hash`, `role`, `alamat_default`, `created_at`) VALUES
+(1, 'Admin CampRent', 'admin@camprent.id', '081234567890', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin', 'Basecamp CampRent Yogyakarta', '2026-11-25 06:42:02'),
+(2, 'Dio Aja', 'dio@example.com', '082372344546', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'customer', 'Jl. Babarsari No. 12, Depok, Sleman, Yogyakarta', '2026-11-25 06:42:02'),
+(3, 'Si Yohwora', 'yohwora@example.com', '082149736370', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'customer', 'Jl. Kaliurang KM 5, Sleman, Yogyakarta', '2026-11-25 06:42:02');
 
 --
 -- Indexes for dumped tables
@@ -453,8 +449,7 @@ ALTER TABLE `site_menus`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id_user`),
-  ADD UNIQUE KEY `email` (`email`),
-  ADD UNIQUE KEY `username` (`username`);
+  ADD UNIQUE KEY `email` (`email`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -470,13 +465,13 @@ ALTER TABLE `captcha_logs`
 -- AUTO_INCREMENT for table `carts`
 --
 ALTER TABLE `carts`
-  MODIFY `id_cart` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_cart` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `cart_items`
 --
 ALTER TABLE `cart_items`
-  MODIFY `id_cart_item` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id_cart_item` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT for table `categories`

@@ -83,6 +83,9 @@ function menu_url($slug)
     if ($slug == '/products') {
         return 'product.php';
     }
+    if ($slug == '/support') {
+        return 'support.php';
+    }
     return '#';     // pages that do not exist yet
 }
 
@@ -298,95 +301,10 @@ function listing_url($f, $changes = [])
 // Who is shopping? No login page yet, so we use the demo user from config.php
 function current_user_id()
 {
-    if (is_logged_in()) {
+    if (isset($_SESSION['id_user'])) {
         return (int) $_SESSION['id_user'];
     }
-    return 0;
-}
-
-function get_guest_cart()
-{
-    if (!isset($_SESSION['guest_cart']) || !is_array($_SESSION['guest_cart'])) {
-        $_SESSION['guest_cart'] = [];
-    }
-    return $_SESSION['guest_cart'];
-}
-
-function save_guest_cart($items)
-{
-    $_SESSION['guest_cart'] = $items;
-}
-
-// Merges any guest session cart items into the user's MySQL cart after login/register
-function merge_guest_cart_to_user($id_user)
-{
-    global $pdo;
-
-    $guestCart = get_guest_cart();
-    if (count($guestCart) === 0 || $id_user <= 0) {
-        return;
-    }
-
-    $id_cart = db_query('SELECT id_cart FROM carts WHERE id_user = ?', [$id_user])->fetchColumn();
-    if (!$id_cart) {
-        db_query('INSERT INTO carts (id_user, metode_pembayaran) VALUES (?, ?)', [$id_user, 'QRIS']);
-        $id_cart = (int) $pdo->lastInsertId();
-    }
-
-    foreach ($guestCart as $entry) {
-        $id_product = (int) ($entry['id_product'] ?? 0);
-        $id_variant = (int) ($entry['id_variant'] ?? 0);
-        $guestQty   = (int) ($entry['qty'] ?? 0);
-
-        if ($id_product <= 0 || $id_variant <= 0 || $guestQty <= 0) {
-            continue;
-        }
-
-        $variant = db_query(
-            'SELECT stok_tersedia FROM product_variants WHERE id_variant = ? AND id_product = ?',
-            [$id_variant, $id_product]
-        )->fetch();
-
-        if (!$variant || (int) $variant['stok_tersedia'] <= 0) {
-            continue;
-        }
-
-        $maxStock = (int) $variant['stok_tersedia'];
-        $existing = db_query(
-            'SELECT id_cart_item, qty FROM cart_items WHERE id_cart = ? AND id_product = ? AND id_variant = ?',
-            [$id_cart, $id_product, $id_variant]
-        )->fetch();
-
-        if ($existing) {
-            $mergedQty = min($maxStock, (int) $existing['qty'] + $guestQty);
-            db_query('UPDATE cart_items SET qty = ? WHERE id_cart_item = ?', [$mergedQty, $existing['id_cart_item']]);
-        } else {
-            $insertQty = min($maxStock, $guestQty);
-            db_query(
-                'INSERT INTO cart_items (id_cart, id_product, id_variant, qty) VALUES (?, ?, ?, ?)',
-                [$id_cart, $id_product, $id_variant, $insertQty]
-            );
-        }
-    }
-
-    unset($_SESSION['guest_cart']);
-}
-
-// Total number of items in the cart (database for logged-in users, session for guests)
-function cart_count()
-{
-    if (is_logged_in()) {
-        $sql = 'SELECT COALESCE(SUM(ci.qty), 0)
-                FROM carts c JOIN cart_items ci ON ci.id_cart = c.id_cart
-                WHERE c.id_user = ?';
-        return (int) db_query($sql, [current_user_id()])->fetchColumn();
-    }
-
-    $total = 0;
-    foreach (get_guest_cart() as $item) {
-        $total += (int) ($item['qty'] ?? 0);
-    }
-    return $total;
+    return DEMO_USER_ID;
 }
 
 function is_logged_in()
@@ -410,6 +328,15 @@ function user_initials()
         $initials = mb_substr($parts[0], 0, 2, 'UTF-8');
     }
     return mb_strtoupper($initials, 'UTF-8');
+}
+
+// Total number of items in the cart (shown in the little yellow badge)
+function cart_count()
+{
+    $sql = 'SELECT COALESCE(SUM(ci.qty), 0)
+            FROM carts c JOIN cart_items ci ON ci.id_cart = c.id_cart
+            WHERE c.id_user = ?';
+    return (int) db_query($sql, [current_user_id()])->fetchColumn();
 }
 
 // A secret random text put in every Add to Cart form. It proves the click came

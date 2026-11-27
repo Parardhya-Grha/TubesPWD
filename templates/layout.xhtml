@@ -9,10 +9,9 @@
   <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&amp;family=Roboto:wght@100;300;400;500;700&amp;display=swap" />
   <link rel="stylesheet" type="text/css" href="css/style.css" />
   <link rel="stylesheet" type="text/css" href="css/listing.css" />
-  <link rel="stylesheet" type="text/css" href="css/cart.css" />
-  <script type="text/javascript" src="js/cart.js"></script>
-  <script type="text/javascript" src="js/script.js"></script>
-  <script type="text/javascript" src="js/listing.js"></script>
+{{#if page_css}}
+  <link rel="stylesheet" type="text/css" href="{{page_css}}" />
+{{/if}}
 </head>
 <body>
 
@@ -36,7 +35,24 @@
             </div>
           </form>
           <a class="icon-link" href="#" title="Notifications"><img src="{{asset.bell}}" alt="" width="24" height="24" /></a>
-          <a class="icon-link cart" href="cart.php" title="Cart"><img src="{{asset.cart}}" alt="" width="24" height="24" /><span id="cart-badge" class="cart__badge{{#if cart_empty}} is-empty{{/if}}">{{cart_count}}</span></a>
+          <a class="icon-link cart" href="#" title="Cart"><img src="{{asset.cart}}" alt="" width="24" height="24" /><span id="cart-badge" class="cart__badge{{#if cart_empty}} is-empty{{/if}}">{{cart_count}}</span></a>
+          {{#if is_logged_in}}
+          <a class="icon-link profile-initials" href="index.php" title="{{user_name}}">{{user_initials}}</a>
+          {{/if}}
+          {{#if is_guest}}
+          <a class="icon-link" href="login.php" title="Masuk atau Daftar"><img src="{{asset.user}}" alt="" width="25" height="25" /></a>
+          {{/if}} 
+        </div>
+
+        <div class="header__actions">
+          <form class="search" action="support.php" method="get">
+            <div>
+              <img class="search__icon" src="{{asset.search}}" alt="" width="17" height="17" />
+              <input id="search-input" type="text" name="q" value="{{search_text}}" title="Cari produk" />
+            </div>
+          </form>
+          <a class="icon-link" href="#" title="Notifications"><img src="{{asset.bell}}" alt="" width="24" height="24" /></a>
+          <a class="icon-link cart" href="#" title="Cart"><img src="{{asset.cart}}" alt="" width="24" height="24" /><span id="cart-badge" class="cart__badge{{#if cart_empty}} is-empty{{/if}}">{{cart_count}}</span></a>
           {{#if is_logged_in}}
           <a class="icon-link profile-initials" href="index.php" title="{{user_name}}">{{user_initials}}</a>
           {{/if}}
@@ -66,7 +82,7 @@
 
       <div class="footer__contact">
         <h4 class="footer__heading">Kontak Kami</h4>
-        <p>WhatsApp 0812345678910</p>
+        <p>WhatsApp 0812 3456 7890</p>
         <p><a href="mailto:camprent@gmail.com">camprent@gmail.com</a></p>
         <p>Based in Yogyakarta, Indonesia</p>
         <p>Open Everyday</p>
@@ -88,5 +104,10 @@
   <!-- Message shown after Add to Cart (listing.js also uses it) -->
   <div id="toast" class="toast{{#if toast_visible}} is-visible{{/if}}{{#if toast_error}} toast--error{{/if}}">{{toast_text}}</div>
 
+  <script type="text/javascript" src="js/script.js"></script>
+  <script type="text/javascript" src="js/listing.js"></script>
+{{#if page_js}}
+  <script type="text/javascript" src="{{page_js}}"></script>
+{{/if}}
 </body>
 </html>

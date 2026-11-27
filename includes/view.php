@@ -264,7 +264,8 @@ function page_links_data($f, $page, $total_pages)
 //   $page = 'home' or 'products'     $data = the values for that page
 //   $title = text in the browser tab $active_menu = menu item to highlight (e.g. '/products')
 //   $search_text = what to show in the search box
-function show_page($page, $data, $title, $active_menu, $search_text)
+//   $extra = optional ['css' => 'css/x.css', 'js' => 'js/x.js'] loaded only on that page
+function show_page($page, $data, $title, $active_menu, $search_text, $extra = [])
 {
     // Values every template can use: the image paths, the security token, the return page
     $data['asset'] = ASSET;
@@ -311,6 +312,8 @@ function show_page($page, $data, $title, $active_menu, $search_text)
         'toast_visible' => $toast_visible,
         'toast_error'   => $toast_error,
         'toast_text'    => $toast_text,
+        'page_css'      => $extra['css'] ?? '',
+        'page_js'       => $extra['js'] ?? '',
         'content'       => $content,
     ]);
 }

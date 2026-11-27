@@ -1,0 +1,132 @@
+  <div class="container">
+    <div class="support">
+
+      <!-- HERO -->
+      <div class="support-hero">
+        <div class="support-hero__text">
+          <p class="support-hero__eyebrow">Pusat Bantuan &amp; Panduan Sewa</p>
+          <h1 class="support-hero__title">Layanan Support CampRent</h1>
+          <p class="support-hero__desc">Butuh rekomendasi carrier sesuai tinggi badan, perpanjangan durasi sewa saat masih di jalur pendakian, atau laporan kendala alat? Tim kami siap membantu setiap hari pukul 08.00 &#8211; 21.00 WIB.</p>
+        </div>
+        <div class="support-hero__actions">
+          <a class="support-btn support-btn--yellow" href="mailto:camprent@gmail.com">Email camprent@gmail.com</a>
+          <a class="support-btn support-btn--ghost" href="#">Baca Halaman FAQ</a>
+        </div>
+      </div>
+
+      <!-- CARA MENYEWA ALAT -->
+      <h2 class="support-heading">CARA MENYEWA ALAT</h2>
+      <div class="steps">
+        <div class="step">
+          <h3 class="step__title">01. Pilih Perlengkapan</h3>
+          <p class="step__text">Telusuri katalog CampRent di halaman Product atau kategori beranda, lalu klik Add to Cart pada alat yang dibutuhkan.</p>
+        </div>
+        <div class="step">
+          <h3 class="step__title">02. Tentukan Durasi Sewa</h3>
+          <p class="step__text">Atur jumlah unit serta durasi sewa harian (hitungan 24 jam per hari) langsung dari panel keranjang.</p>
+        </div>
+        <div class="step">
+          <h3 class="step__title">03. Isi Data &amp; Pilih Basecamp</h3>
+          <p class="step__text">Lengkapi nama sesuai KTP/KTM, nomor WhatsApp aktif, tanggal ambil, dan pilih cabang Yogyakarta yang terdekat.</p>
+        </div>
+        <div class="step">
+          <h3 class="step__title">04. Cek Fisik &amp; Berangkat</h3>
+          <p class="step__text">Tunjukkan kartu identitas asli saat pengambilan. Petugas akan membantu cek kelengkapan tenda, frame, dan resleting bersama kamu.</p>
+        </div>
+      </div>
+
+      <!-- SYARAT & KETENTUAN + FORM -->
+      <div class="support-info">
+
+        <div class="terms">
+          <h2 class="terms__title">Syarat &amp; Ketentuan Sewa</h2>
+          <ul class="terms__list">
+            <li class="term">
+              <span class="term__icon term__icon--layered">
+                <span class="term__layer term__layer--1"><img src="{{asset.term_id_1}}" alt="" /></span>
+                <span class="term__layer term__layer--2"><img src="{{asset.term_id_2}}" alt="" /></span>
+                <span class="term__layer term__layer--3"><img src="{{asset.term_id_3}}" alt="" /></span>
+              </span>
+              <div class="term__body">
+                <h3>Jaminan Identitas Asli</h3>
+                <p>Wajib meninggalkan 1 identitas asli (e-KTP, SIM, atau KTM Yogyakarta) yang masih berlaku selama masa peminjaman.</p>
+              </div>
+            </li>
+            <li class="term">
+              <span class="term__icon"><img src="{{asset.term_clock}}" alt="" width="20" height="20" /></span>
+              <div class="term__body">
+                <h3>Toleransi Pengembalian</h3>
+                <p>Hitungan sewa adalah 24 jam per hari. Keterlambatan lebih dari 2 jam tanpa konfirmasi dikenakan tarif 1 hari tambahan.</p>
+              </div>
+            </li>
+            <li class="term">
+              <span class="term__icon"><img src="{{asset.term_shield}}" alt="" width="20" height="20" /></span>
+              <div class="term__body">
+                <h3>Kebersihan &amp; Perawatan</h3>
+                <p>Penyewa tidak perlu mencuci alat. Cukup bersihkan sisa makanan di alat masak dan pastikan tenda tidak disimpan basah terlalu lama.</p>
+              </div>
+            </li>
+            <li class="term">
+              <span class="term__icon"><img src="{{asset.term_phone}}" alt="" width="20" height="20" /></span>
+              <div class="term__body">
+                <h3>Hotline Cepat Yogyakarta</h3>
+                <p>WhatsApp: <strong>0812 3456 7890</strong> (Open Everyday, 08:00 &#8211; 21:00 WIB)</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="contact">
+          <h2 class="contact__title">Kirim Pesan ke Tim Support</h2>
+          <p class="contact__lead">Gunakan formulir ini untuk konsultasi ukuran gear, perpanjangan masa sewa, atau laporan kendala.</p>
+
+{{#if err_form}}
+          <div class="support-alert">{{err_form}}</div>
+{{/if}}
+
+          <form id="support-form" class="support-form" action="support.php" method="post">
+            <div class="support-form__grid">
+              <input type="hidden" name="csrf" value="{{csrf}}" />
+
+              <div class="support-form__field{{#if err_nama}} has-error{{/if}}">
+                <label for="sup-nama">Nama Lengkap</label>
+                <input id="sup-nama" type="text" name="nama" value="{{nama}}" maxlength="100" />
+                <span class="support-form__error" id="err-nama">{{err_nama}}</span>
+              </div>
+
+              <div class="support-form__field{{#if err_kontak}} has-error{{/if}}">
+                <label for="sup-kontak">WhatsApp atau Email</label>
+                <input id="sup-kontak" type="text" name="kontak" value="{{kontak}}" maxlength="100" />
+                <span class="support-form__error" id="err-kontak">{{err_kontak}}</span>
+              </div>
+
+              <div class="support-form__field">
+                <label for="sup-topik">Topik Bantuan</label>
+                <select id="sup-topik" name="topik">
+{{#each topics}}
+                  <option value="{{value}}"{{#if selected}} selected="selected"{{/if}}>{{value}}</option>
+{{/each}}
+                </select>
+              </div>
+
+              <div class="support-form__field">
+                <label for="sup-kode">Kode Booking (Opsional)</label>
+                <input id="sup-kode" type="text" name="kode_booking" value="{{kode}}" maxlength="30" />
+              </div>
+
+              <div class="support-form__field support-form__field--full{{#if err_pesan}} has-error{{/if}}">
+                <label for="sup-pesan">Detail Pesan</label>
+                <textarea id="sup-pesan" name="pesan" rows="5" cols="40">{{pesan}}</textarea>
+                <span class="support-form__error" id="err-pesan">{{err_pesan}}</span>
+              </div>
+
+              <div class="support-form__field support-form__field--full">
+                <button id="sup-submit" type="submit" class="support-btn support-btn--navy">Kirim ke Tim Support</button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,206 @@
+/* =========================================================
+   CampRent – the SUPPORT page.
+   Loaded AFTER css/style.css and css/listing.css (only on support.php),
+   so it re-uses their tokens (--navy, --yellow, --gutter ...) and the
+   shared header, footer and toast.
+   ========================================================= */
+
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap");
+
+.support {
+  --support-line: #ebedef;
+  --support-field: #f8f8f8;
+  --support-soft: rgba(0, 48, 73, 0.8);
+  --support-error: #d62828;
+  padding: 36px 0 12px;
+  font-family: "Plus Jakarta Sans", "Inter", sans-serif;
+  color: var(--navy);
+}
+
+/* ---------- Buttons ---------- */
+.support-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 7px;
+  font-family: inherit;
+  font-size: 13px;
+  line-height: normal;
+  white-space: nowrap;
+  transition: filter 0.15s ease, background 0.15s ease;
+}
+.support-btn--yellow { background: var(--yellow); color: var(--navy); font-weight: 700; }
+.support-btn--ghost  { background: rgba(248, 248, 248, 0.12); color: #f8f8f8; font-weight: 500; }
+.support-btn--navy   { width: 174px; background: var(--navy); color: #f8f8f8; font-weight: 500; }
+.support-btn--yellow:hover,
+.support-btn--navy:hover { filter: brightness(1.1); }
+.support-btn--ghost:hover { background: rgba(248, 248, 248, 0.2); }
+.support-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ---------- Hero ---------- */
+.support-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  min-height: 207px;
+  padding: 32px;
+  border-radius: 15px;
+  background: var(--navy);
+}
+.support-hero__eyebrow { font-weight: 500; font-size: 12px; line-height: 18px; color: var(--yellow); }
+.support-hero__title {
+  margin: 6px 0 12px;
+  font-weight: 700;
+  font-size: clamp(26px, 3.4vw, 36px);
+  line-height: 1.25;
+  color: #f8f8f8;
+}
+.support-hero__desc {
+  max-width: 620px;
+  font-size: 14px;
+  line-height: 22.75px;
+  color: rgba(248, 248, 248, 0.85);
+}
+.support-hero__actions { display: flex; flex-direction: column; gap: 10px; flex: none; width: 210px; }
+
+/* ---------- Cara menyewa alat ---------- */
+.support-heading {
+  margin: 36px 0 16px;
+  font-weight: 700;
+  font-size: clamp(22px, 2.6vw, 28px);
+  line-height: 1.5;
+  color: var(--navy);
+}
+
+.steps { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.step {
+  min-height: 180px;
+  padding: 20px;
+  border: 1px solid var(--support-line);
+  border-radius: 15px;
+  background: #fff;
+}
+.step__title { margin-bottom: 14px; font-weight: 700; font-size: 15px; line-height: 22.5px; }
+.step__text  { font-size: 13px; line-height: 21px; color: var(--support-soft); }
+
+/* ---------- Syarat & ketentuan + form ---------- */
+.support-info {
+  display: grid;
+  grid-template-columns: minmax(0, 41fr) minmax(0, 59fr);
+  align-items: start;
+  margin-top: 40px;
+}
+
+.terms,
+.contact {
+  padding: 24px;
+  border: 1px solid var(--support-line);
+  border-radius: 15px;
+  background: #fff;
+}
+.terms { position: relative; min-height: 504px; }
+.contact { position: relative; z-index: 1; }
+
+.terms__title,
+.contact__title { font-weight: 700; font-size: 20px; line-height: 30px; }
+
+.terms__list { margin: 16px 0 0; padding: 0; list-style: none; }
+.term {
+  display: flex;
+  gap: 12px;
+  padding: 14px 0 18px;
+  border-top: 1px solid var(--support-line);
+}
+.term:first-child { padding-top: 4px; border-top: 0; }
+.term__body h3 { font-weight: 600; font-size: 13px; line-height: 21px; }
+.term__body p  { font-size: 13px; line-height: 21px; color: var(--support-soft); }
+.term__body strong { font-weight: 700; }
+
+.term__icon { position: relative; flex: none; width: 20px; height: 20px; }
+.term__icon img { width: 20px; height: 20px; }
+
+/* The first icon is built from 3 vector parts laid on top of each other (like in Figma) */
+.term__layer { position: absolute; }
+.term__layer img { position: absolute; width: auto; height: auto; max-width: none; }
+.term__layer--1 { inset: 8.33% 16.67%; }
+.term__layer--1 img { inset: -5% -6.25%; }
+.term__layer--2 { inset: 8.33% 16.67% 66.67% 58.33%; }
+.term__layer--2 img { inset: -16.67%; }
+.term__layer--3 { inset: 54.17% 37.5% 29.17% 37.5%; }
+.term__layer--3 img { inset: -25% -16.67%; }
+
+/* ---------- Message form ---------- */
+.contact__lead { margin: 6px 0 14px; font-size: 13px; line-height: 19.5px; color: #6b7280; }
+
+.support-alert {
+  margin-bottom: 14px;
+  padding: 10px 14px;
+  border: 1px solid #f3b8b8;
+  border-radius: 7px;
+  background: #fdecec;
+  font-size: 13px;
+  line-height: 19.5px;
+  color: #7f1d1d;
+}
+
+.support-form { margin: 0; }
+.support-form__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+.support-form__field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.support-form__field--full { grid-column: 1 / -1; }
+
+.support-form label { font-weight: 500; font-size: 12px; line-height: 18px; color: var(--navy); }
+
+.support-form input[type="text"],
+.support-form select,
+.support-form textarea {
+  width: 100%;
+  border: 1px solid var(--support-line);
+  border-radius: 7px;
+  outline: 0;
+  background: var(--support-field);
+  padding: 0 14px;
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--navy);
+}
+.support-form input[type="text"],
+.support-form select { height: 40px; }
+.support-form select { cursor: pointer; }
+.support-form textarea { height: 108px; padding: 12px 14px; line-height: 19.5px; resize: vertical; }
+
+.support-form input::placeholder,
+.support-form textarea::placeholder { color: rgba(0, 48, 73, 0.5); }
+
+.support-form input[type="text"]:focus,
+.support-form select:focus,
+.support-form textarea:focus {
+  border-color: var(--navy);
+  box-shadow: 0 0 0 2px rgba(0, 48, 73, 0.12);
+}
+
+.support-form__field.has-error input,
+.support-form__field.has-error textarea { border-color: var(--support-error); }
+.support-form__error { font-size: 11px; line-height: 15px; color: var(--support-error); }
+.support-form__error:empty { display: none; }
+
+/* ---------- Breakpoints (same as style.css) ---------- */
+@media (max-width: 900px) {
+  .steps { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .support-info { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+  .terms { min-height: 0; }
+}
+
+@media (max-width: 720px) {
+  .support-hero { flex-direction: column; align-items: flex-start; }
+  .support-hero__actions { width: 100%; }
+  .steps { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .support-form__grid { grid-template-columns: minmax(0, 1fr); }
+  .support-btn--navy { width: 100%; }
+}
