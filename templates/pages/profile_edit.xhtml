@@ -1,0 +1,123 @@
+<div class="account-page">
+
+    <div class="account-title">
+        <h1>Akun Saya</h1>
+        <p>Perbarui informasi profil Anda.</p>
+    </div>
+
+    <div class="account-layout">
+
+        <aside class="account-sidebar">
+
+            <div class="account-sidebar-user">
+                <div class="account-avatar">{{initials}}</div>
+                <h3>{{nama_lengkap}}</h3>
+                <p>{{email}}</p>
+            </div>
+
+            <nav class="account-nav">
+
+                <a href="profile.php" class="account-nav-link">
+                    <span>Profil Saya</span>
+                </a>
+
+                <a href="profile_edit.php" class="account-nav-link active">
+                    <span>Edit Profil</span>
+                </a>
+
+                <a href="history.php" class="account-nav-link">
+                    <span>Riwayat Sewa</span>
+                </a>
+
+                <a href="logout.php" class="account-nav-link account-logout">
+                    <span>Keluar</span>
+                </a>
+
+            </nav>
+
+        </aside>
+
+        <main class="account-main">
+
+            <div class="account-card">
+
+                <div class="account-card-header">
+                    <div>
+                        <h2>Edit Profil</h2>
+                        <p>Ubah informasi akun CampRent Anda.</p>
+                    </div>
+                </div>
+
+                {{#if error}}
+                <div class="account-alert account-alert-error">
+                    {{error}}
+                </div>
+                {{/if}}
+
+                <form action="profile_edit.php" method="post">
+
+                    <input type="hidden" name="csrf" value="{{csrf}}" />
+
+                    <div class="account-form-field">
+                        <label for="nama_lengkap">Nama Lengkap</label>
+                        <input
+                            type="text"
+                            id="nama_lengkap"
+                            name="nama_lengkap"
+                            value="{{nama_lengkap}}"
+                            required="required"
+                        />
+                    </div>
+
+                    <div class="account-form-field">
+                        <label for="email">Email</label>
+                        <input
+                            type="email"
+                            id="email"
+                            value="{{email}}"
+                            readonly="readonly"
+                        />
+                        <small>Email tidak dapat diubah.</small>
+                    </div>
+
+                    <div class="account-form-field">
+                        <label for="no_hp">Nomor WhatsApp</label>
+                        <input
+                            type="text"
+                            id="no_hp"
+                            name="no_hp"
+                            value="{{no_hp}}"
+                            required="required"
+                        />
+                    </div>
+
+                    <div class="account-form-field">
+                        <label for="alamat_default">Alamat Utama</label>
+                        <textarea
+                            id="alamat_default"
+                            name="alamat_default"
+                            rows="5"
+                        >{{alamat}}</textarea>
+                    </div>
+
+                    <div class="account-form-actions">
+
+                        <a href="profile.php" class="account-cancel-button">
+                            Batal
+                        </a>
+
+                        <button type="submit" class="account-save-button">
+                            Simpan Perubahan
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</div>

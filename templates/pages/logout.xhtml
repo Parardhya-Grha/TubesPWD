@@ -1,0 +1,71 @@
+<div class="account-page">
+
+    <div class="account-title">
+        <h1>Akun Saya</h1>
+        <p>Konfirmasi keluar dari akun CampRent.</p>
+    </div>
+
+    <div class="account-layout">
+
+        <aside class="account-sidebar">
+
+            <div class="account-sidebar-user">
+                <div class="account-avatar">{{user_initials}}</div>
+                <h3>{{user_name}}</h3>
+            </div>
+
+            <nav class="account-nav">
+
+                <a href="profile.php" class="account-nav-link">
+                    <span>Profil Saya</span>
+                </a>
+
+                <a href="profile_edit.php" class="account-nav-link">
+                    <span>Edit Profil</span>
+                </a>
+
+                <a href="history.php" class="account-nav-link">
+                    <span>Riwayat Sewa</span>
+                </a>
+
+                <a href="logout.php" class="account-nav-link active account-logout">
+                    <span>Keluar</span>
+                </a>
+
+            </nav>
+
+        </aside>
+
+        <main class="account-main">
+
+            <div class="account-logout-card">
+
+                <div class="account-logout-icon">↪</div>
+
+                <h2>Keluar dari Akun?</h2>
+
+                <p>
+                    Apakah Anda yakin ingin keluar dari akun CampRent?
+                </p>
+
+                <form action="logout.php" method="post">
+
+                    <input type="hidden" name="csrf" value="{{csrf}}" />
+
+                    <button type="submit" class="account-logout-button">
+                        Ya, Keluar
+                    </button>
+
+                </form>
+
+                <a href="profile.php" class="account-cancel-link">
+                    Batal
+                </a>
+
+            </div>
+
+        </main>
+
+    </div>
+
+</div>

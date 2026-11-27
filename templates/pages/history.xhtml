@@ -1,106 +1,104 @@
-<div class="ph-page">
+<div class="account-page">
 
-    <div class="ph-heading">
-        <h1>Riwayat Penyewaan</h1>
-        <p>Daftar transaksi penyewaan perlengkapan camping Anda.</p>
+    <div class="account-title">
+        <h1>Riwayat Sewa</h1>
+        <p>Kelola dan lihat transaksi penyewaan perlengkapan camping.</p>
     </div>
 
-    {{#if has_history}}
+    <div class="account-layout">
 
-    {{#each history}}
+        <aside class="account-sidebar">
 
-    <div class="ph-history-card">
-
-        <div class="ph-history-header">
-            <div>
-                <span class="ph-small">Kode Transaksi</span>
-                <h3>{{kode_transaksi}}</h3>
+            <div class="account-sidebar-user">
+                <div class="account-avatar">{{user_initials}}</div>
+                <h3>{{user_name}}</h3>
             </div>
 
-            <span class="ph-status">{{status_sewa}}</span>
-        </div>
+            <nav class="account-nav">
 
-        <div class="ph-grid">
+                <a href="profile.php" class="account-nav-link">
+                    <span>Profil Saya</span>
+                </a>
 
-            <div>
-                <span class="ph-small">Tanggal Mulai</span>
-                <strong>{{tanggal_mulai}}</strong>
+                <a href="profile_edit.php" class="account-nav-link">
+                    <span>Edit Profil</span>
+                </a>
+
+                <a href="history.php" class="account-nav-link active">
+                    <span>Riwayat Sewa</span>
+                </a>
+
+                <a href="logout.php" class="account-nav-link account-logout">
+                    <span>Keluar</span>
+                </a>
+
+            </nav>
+
+        </aside>
+
+        <main class="account-main">
+
+            <div class="account-card">
+
+                <h2>Daftar Penyewaan</h2>
+
+                <div class="history-tabs">
+
+                    <a href="history.php?status=all"
+                       class="{{#if filter_all}}history-tab-active{{/if}}">
+                       Semua
+                    </a>
+
+                    <a href="history.php?status=sedang_disewa"
+                       class="{{#if filter_sewa}}history-tab-active{{/if}}">
+                       Sedang Disewa
+                    </a>
+
+                    <a href="history.php?status=selesai"
+                       class="{{#if filter_selesai}}history-tab-active{{/if}}">
+                       Selesai
+                    </a>
+
+                    <a href="history.php?status=menunggu_konfirmasi"
+                       class="{{#if filter_konfirmasi}}history-tab-active{{/if}}">
+                       Menunggu Konfirmasi
+                    </a>
+
+                    <a href="history.php?status=dibatalkan"
+                       class="{{#if filter_batal}}history-tab-active{{/if}}">
+                       Dibatalkan
+                    </a>
+
+                </div>
+
+                {{#if has_history}}
+
+                {{{cards_html}}}
+
+                {{else}}
+
+                <div class="history-empty">
+
+                    <div class="history-empty-icon">⛺</div>
+
+                    <h3>Belum Ada Riwayat Sewa</h3>
+
+                    <p>
+                        Transaksi penyewaan pada kategori ini belum tersedia.
+                    </p>
+
+                    <a href="product.php" class="account-save-button">
+                        Jelajahi Produk
+                    </a>
+
+                </div>
+
+                {{/if}}
+
             </div>
 
-            <div>
-                <span class="ph-small">Tanggal Selesai</span>
-                <strong>{{tanggal_selesai}}</strong>
-            </div>
-
-            <div>
-                <span class="ph-small">Durasi</span>
-                <strong>{{durasi}} Hari</strong>
-            </div>
-
-            <div>
-                <span class="ph-small">Metode Pembayaran</span>
-                <strong>{{metode}}</strong>
-            </div>
-
-            <div>
-                <span class="ph-small">Status Pembayaran</span>
-                <strong>{{status_pembayaran}}</strong>
-            </div>
-
-        </div>
-
-        <h4>Barang yang Disewa</h4>
-
-        {{{items_html}}}
-
-        <div class="ph-summary">
-
-            <div>
-                <span>Subtotal Sewa</span>
-                <strong>{{subtotal}}</strong>
-            </div>
-
-            <div>
-                <span>Biaya Pengiriman</span>
-                <strong>{{pengiriman}}</strong>
-            </div>
-
-            <div>
-                <span>Biaya Layanan</span>
-                <strong>{{layanan}}</strong>
-            </div>
-
-            <div class="ph-total">
-                <span>Total Pembayaran</span>
-                <strong>{{total}}</strong>
-            </div>
-
-        </div>
-
-        <div class="ph-address">
-            <span class="ph-small">Alamat Pengiriman</span>
-            <p>{{alamat}}</p>
-        </div>
-
-        {{#if catatan}}
-        <div class="ph-address">
-            <span class="ph-small">Catatan Pesanan</span>
-            <p>{{catatan}}</p>
-        </div>
-        {{/if}}
+        </main>
 
     </div>
-
-    {{/each}}
-
-    {{else}}
-
-    <div class="ph-empty">
-        <h2>Belum Ada Riwayat Penyewaan</h2>
-        <p>Anda belum melakukan transaksi penyewaan.</p>
-        <a href="product.php" class="ph-button">Mulai Menyewa</a>
-    </div>
-
-    {{/if}}
 
 </div>
