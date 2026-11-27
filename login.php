@@ -1,3 +1,4 @@
+
 <?php
 require_once __DIR__ . '/includes/helpers.php';
 
@@ -10,12 +11,12 @@ $error = '';
 $email = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $token    = (string) ($_POST['csrf'] ?? '');
-    $email    = trim((string) ($_POST['email'] ?? ''));
+    $token = (string) ($_POST['csrf'] ?? '');
+    $email = trim((string) ($_POST['email'] ?? ''));
     $password = (string) ($_POST['password'] ?? '');
 
     if (!csrf_valid($token)) {
-        $error = 'Sesi formulir tidak valid. Silakan muat ulang halaman dan coba lagi.';
+        $error = 'Sesi formulir tidak valid. Silakan muat ulang halaman.';
     } elseif ($email === '' || $password === '') {
         $error = 'Email dan password wajib diisi.';
     } else {
@@ -27,23 +28,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             [$email]
         )->fetch();
 
-        if ($user) {
-            // Salt taken only from PHP config (not stored in the database)
-            $salt = AUTH_SALT; // <-- THIS VARIABLE IS THE SALT
+        if ($user && password_verify($password, $user['password_hash'])) {
+            session_regenerate_id(true);
 
-            // Combine the PHP salt with the submitted password and hash with SHA-256
-            $computedHash = hash('sha256', $salt . $password); // <-- THIS VARIABLE IS THE SHA-256 HASH
+            $_SESSION['id_user'] = (int) $user['id_user'];
+            $_SESSION['nama_lengkap'] = $user['nama_lengkap'];
+            $_SESSION['username'] = $user['username'];
+            $_SESSION['role'] = $user['role'];
 
-            if (hash_equals($user['password_hash'], $computedHash)) {
-                session_regenerate_id(true);
-                $_SESSION['id_user']      = (int) $user['id_user'];
-                $_SESSION['nama_lengkap'] = $user['nama_lengkap'];
-                $_SESSION['username']     = $user['username'];
-                $_SESSION['role']         = $user['role'];
-
-                header('Location: index.php');
-                exit;
-            }
+            header('Location: index.php');
+            exit;
         }
 
         $error = 'Email atau password salah.';
@@ -51,14 +45,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 $alertHtml = '';
+
 if ($error !== '') {
-    $alertHtml = '<div class="auth__alert auth__alert--error">' . e($error) . '</div>';
+    $alertHtml = '<div class="auth__alert auth__alert--error">'
+        . e($error) . '</div>';
 }
 
 $html = file_get_contents(__DIR__ . '/templates/pages/login.xhtml');
+
 echo strtr($html, [
     '{{hero_img}}' => e(ASSET['hero']),
-    '{{csrf}}'     => e(csrf_token()),
-    '{{email}}'    => e($email),
-    '{{{alert}}}'  => $alertHtml,
+    '{{csrf}}' => e(csrf_token()),
+    '{{email}}' => e($email),
+    '{{{alert}}}' => $alertHtml,
 ]);

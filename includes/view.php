@@ -308,6 +308,7 @@ function show_page($page, $data, $title, $active_menu, $search_text)
         'is_guest'      => !is_logged_in(),
         'user_initials' => user_initials(),
         'user_name'     => $_SESSION['nama_lengkap'] ?? '',
+        'csrf'          => csrf_token(),
         'toast_visible' => $toast_visible,
         'toast_error'   => $toast_error,
         'toast_text'    => $toast_text,
