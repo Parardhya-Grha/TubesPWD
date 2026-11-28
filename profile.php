@@ -22,7 +22,6 @@ $form = [
     'nama_lengkap'   => (string) ($profile['nama_lengkap'] ?? ''),
     'email'          => (string) ($profile['email'] ?? ''),
     'no_hp'          => (string) ($profile['no_hp'] ?? ''),
-    'jenis_kelamin'  => (string) ($profile['jenis_kelamin'] ?? ''),
     'tanggal_lahir'  => (string) ($profile['tanggal_lahir'] ?? ''),
     'alamat_default' => (string) ($profile['alamat_default'] ?? ''),
 ];
@@ -40,7 +39,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $namaLengkap   = trim((string) ($_POST['nama_lengkap'] ?? ''));
         $email         = trim((string) ($_POST['email'] ?? ''));
         $noHp          = trim((string) ($_POST['no_hp'] ?? ''));
-        $jenisKelamin  = trim((string) ($_POST['jenis_kelamin'] ?? ''));
         $tanggalLahir  = trim((string) ($_POST['tanggal_lahir'] ?? ''));
         $alamatDefault = trim((string) ($_POST['alamat_default'] ?? ''));
 
@@ -49,7 +47,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             'nama_lengkap'   => $namaLengkap,
             'email'          => $email,
             'no_hp'          => $noHp,
-            'jenis_kelamin'  => $jenisKelamin,
             'tanggal_lahir'  => $tanggalLahir,
             'alamat_default' => $alamatDefault,
         ];
@@ -60,8 +57,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $error = 'Username harus 3–30 karakter (huruf, angka, titik, atau garis bawah).';
         } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $error = 'Format email tidak valid.';
-        } elseif ($jenisKelamin !== '' && !in_array($jenisKelamin, ['Laki-laki', 'Perempuan'], true)) {
-            $error = 'Pilihan jenis kelamin tidak valid.';
         } elseif ($tanggalLahir !== '' && !preg_match('/^\d{4}-\d{2}-\d{2}$/', $tanggalLahir)) {
             $error = 'Format tanggal lahir tidak valid.';
         } else {
@@ -78,14 +73,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         if ($error === '') {
-            $jkVal  = ($jenisKelamin !== '') ? $jenisKelamin : null;
             $tglVal = ($tanggalLahir !== '') ? $tanggalLahir : null;
 
             db_query(
                 'UPDATE users
-                 SET username = ?, nama_lengkap = ?, email = ?, no_hp = ?, jenis_kelamin = ?, tanggal_lahir = ?, alamat_default = ?
+                 SET username = ?, nama_lengkap = ?, email = ?, no_hp = ?, tanggal_lahir = ?, alamat_default = ?
                  WHERE id_user = ?',
-                [$username, $namaLengkap, $email, $noHp, $jkVal, $tglVal, $alamatDefault, $userId]
+                [$username, $namaLengkap, $email, $noHp, $tglVal, $alamatDefault, $userId]
             );
 
             $_SESSION['nama_lengkap'] = $namaLengkap;
@@ -158,7 +152,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header('Location: profile.php?mode=edit');
             exit;
         } else {
-            // Mempertahankan foto profil saat ini
             header('Location: profile.php?mode=edit');
             exit;
         }
@@ -180,13 +173,6 @@ $bigAvatarHtml = ($currentAvatar !== '')
 $modalPhotoHtml = ($currentAvatar !== '')
     ? '<img src="' . e($currentAvatar) . '" alt="' . e($form['nama_lengkap']) . '" />'
     : '<span class="profile-avatar-icon profile-avatar-icon--lg"></span>';
-
-$maleChecked   = ($form['jenis_kelamin'] === 'Laki-laki') ? ' checked="checked"' : '';
-$femaleChecked = ($form['jenis_kelamin'] === 'Perempuan') ? ' checked="checked"' : '';
-
-$genderRadiosHtml =
-    '<label class="profile-radio"><input type="radio" name="jenis_kelamin" value="Laki-laki"' . $maleChecked . ' /> <span>Laki-laki</span></label>' .
-    '<label class="profile-radio"><input type="radio" name="jenis_kelamin" value="Perempuan"' . $femaleChecked . ' /> <span>Perempuan</span></label>';
 
 $tglLahirDisplay = ($form['tanggal_lahir'] !== '') ? indo_date($form['tanggal_lahir']) : '-';
 
@@ -213,8 +199,6 @@ show_page('profile', [
     'nama_lengkap'          => $form['nama_lengkap'],
     'email'                 => $form['email'],
     'no_hp'                 => $form['no_hp'],
-    'jenis_kelamin_display' => ($form['jenis_kelamin'] !== '') ? $form['jenis_kelamin'] : '-',
-    'gender_radios_html'    => $genderRadiosHtml,
     'tanggal_lahir_display' => $tglLahirDisplay,
     'tanggal_lahir_raw'     => $form['tanggal_lahir'],
     'alamat_display'        => ($form['alamat_default'] !== '') ? $form['alamat_default'] : '-',

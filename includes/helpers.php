@@ -454,7 +454,7 @@ function current_user_profile()
     }
 
     return db_query(
-        'SELECT id_user, nama_lengkap, username, email, no_hp, jenis_kelamin, tanggal_lahir, role, alamat_default, foto_profil, created_at
+        'SELECT id_user, nama_lengkap, username, email, no_hp, tanggal_lahir, role, alamat_default, foto_profil, created_at
          FROM users
          WHERE id_user = ?
          LIMIT 1',
