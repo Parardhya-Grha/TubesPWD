@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 27, 2026 at 08:58 PM
+-- Generation Time: Nov 28, 2026 at 02:49 AM
 -- Server version: 10.11.16-MariaDB
 -- PHP Version: 8.5.12
 
@@ -69,7 +69,7 @@ CREATE TABLE `carts` (
 --
 
 INSERT INTO `carts` (`id_cart`, `id_user`, `tanggal_mulai_sewa`, `durasi_hari`, `alamat_pengiriman`, `catatan_kurir`, `catatan_pesanan`, `metode_pembayaran`, `updated_at`) VALUES
-(1, 2, '2026-11-28', 3, 'Jl. Babarsari No. 43, Depok, Sleman, Yogyakarta', 'Titip di pos satpam jika belum di tempat', 'Mohon cek resleting tenda dan carrier sebelum dikirim', 'Bank Transfer', '2026-11-25 06:42:02'),
+(1, 2, '2026-11-18', 1, 'Jl. Babarsari No. 43, Depok, Sleman, Yogyakarta', 'Titip di pos satpam jika belum di tempat', 'Mohon cek resleting tenda dan carrier sebelum dikirim', '', '2026-11-27 21:22:15'),
 (2, 1, NULL, 1, NULL, NULL, NULL, 'Bank Transfer', '2026-11-27 18:50:52');
 
 -- --------------------------------------------------------
@@ -91,12 +91,10 @@ CREATE TABLE `cart_items` (
 --
 
 INSERT INTO `cart_items` (`id_cart_item`, `id_cart`, `id_product`, `id_variant`, `qty`) VALUES
-(1, 1, 1, 1, 1),
-(2, 1, 4, 5, 1),
-(3, 1, 10, 12, 1),
-(4, 1, 2, 3, 1),
-(5, 1, 13, 16, 1),
-(6, 2, 2, 3, 1);
+(6, 2, 2, 3, 1),
+(12, 1, 13, 16, 1),
+(13, 1, 11, 13, 1),
+(14, 1, 10, 12, 1);
 
 -- --------------------------------------------------------
 
@@ -359,7 +357,7 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id_user`, `nama_lengkap`, `username`, `email`, `no_hp`, `password_hash`, `role`, `alamat_default`, `created_at`) VALUES
 (1, 'Admin CampRent', 'admin', 'admin@camprent.id', '081234567890', '9dc55c7f356bd3dfe9f3674de184879d818833405e201c9602a8ad117d45d055', 'admin', 'Basecamp CampRent Yogyakarta', '2026-11-25 06:42:02'),
-(2, 'Dio Aja', 'dioaja', 'dio@example.com', '082372344546', '540e358bbd6e01967c331f181e4c5081bf03948a8a1c8c0b03dd7324658ea83a', 'customer', 'Jl. Babarsari No. 12, Depok, Sleman, Yogyakarta', '2026-11-25 06:42:02'),
+(2, 'Dio Aja', 'dioaja', 'dio@example.com', '082372344546', 'd3f484c916dfb4c3be4f4f62620ecf9d4aa8ae70b82003433c1409bb54aedce1', 'customer', 'Jl. Babarsari No. 12, Depok, Sleman, Yogyakarta', '2026-11-25 06:42:02'),
 (3, 'Si Yohwora', 'siyohwora', 'yohwora@example.com', '082149736370', '040577701af83cdb9d641070df781965466da0740da6fd5430a821d84d93e677', 'customer', 'komp Yadara blok IV', '2026-11-25 06:42:02');
 
 --
@@ -476,7 +474,7 @@ ALTER TABLE `carts`
 -- AUTO_INCREMENT for table `cart_items`
 --
 ALTER TABLE `cart_items`
-  MODIFY `id_cart_item` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id_cart_item` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `categories`
