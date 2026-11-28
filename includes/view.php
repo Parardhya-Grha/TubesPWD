@@ -296,6 +296,12 @@ function show_page($page, $data, $title, $active_menu, $search_text)
 
     $cart_total = cart_count();
 
+    $profile           = is_logged_in() ? current_user_profile() : null;
+    $user_name         = $profile ? (string) $profile['nama_lengkap'] : (string) ($_SESSION['nama_lengkap'] ?? '');
+    $user_avatar       = $profile ? avatar_path($profile['foto_profil'] ?? '') : '';
+    $show_nav_avatar   = (is_logged_in() && $user_avatar !== '');
+    $show_nav_initials = (is_logged_in() && $user_avatar === '');
+
     header('Content-Type: text/html; charset=UTF-8');
     echo render('layout', [
         'asset'         => ASSET,
@@ -304,10 +310,13 @@ function show_page($page, $data, $title, $active_menu, $search_text)
         'search_text'   => $search_text,
         'cart_count'    => $cart_total,
         'cart_empty'    => ($cart_total <= 0),
-        'is_logged_in'  => is_logged_in(),
-        'is_guest'      => !is_logged_in(),
-        'user_initials' => user_initials(),
-        'user_name'     => $_SESSION['nama_lengkap'] ?? '',
+        'is_logged_in'      => is_logged_in(),
+        'show_nav_avatar'   => $show_nav_avatar,
+        'show_nav_initials' => $show_nav_initials,
+        'is_guest'          => !is_logged_in(),
+        'user_initials'     => user_initials(),
+        'user_avatar'       => $user_avatar,
+        'user_name'         => $user_name,
         'toast_visible' => $toast_visible,
         'toast_error'   => $toast_error,
         'toast_text'    => $toast_text,

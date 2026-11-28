@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 $redirect = 'index.php';
                 $requestedRedirect = (string) ($_GET['redirect'] ?? $_POST['redirect'] ?? '');
-                if (in_array($requestedRedirect, ['index.php', 'cart.php', 'product.php'], true)) {
+                if (in_array($requestedRedirect, ['index.php', 'cart.php', 'product.php', 'profile.php'], true)) {
                     $redirect = $requestedRedirect;
                 }
 
