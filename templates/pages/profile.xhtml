@@ -1,0 +1,248 @@
+<div id="profile-page" class="profile-wrap">
+  <div class="container">
+    <div class="profile-layout">
+
+      <!-- SIDEBAR KIRI -->
+      <div class="profile-sidebar">
+        <div class="profile-sidebar__user">
+          <div class="profile-sidebar__avatar">{{{mini_avatar_html}}}</div>
+          <span class="profile-sidebar__username">{{username}}</span>
+        </div>
+
+        <div class="profile-sidebar__divider"></div>
+
+        <div class="profile-sidebar__group">
+          <div class="profile-sidebar__heading">
+            <span class="p-ico p-ico--user"></span>
+            <span>Akun Saya</span>
+          </div>
+          <div class="profile-subnav">
+            <a href="profile.php" class="{{nav_profil_class}}">Profil</a>
+            <a href="profile.php?tab=password" class="{{nav_pass_class}}">Ubah Password</a>
+          </div>
+        </div>
+
+        <div class="profile-sidebar__group">
+          <div class="profile-sidebar__heading">
+            <span class="p-ico p-ico--bag"></span>
+            <span>Aktivitas Sewa</span>
+          </div>
+          <div class="profile-subnav">
+            <a href="cart.php" class="profile-subnav__item">Riwayat Sewa</a>
+            <a href="cart.php" class="profile-subnav__item">Pengembalian Alat</a>
+          </div>
+        </div>
+
+        <div class="profile-sidebar__divider"></div>
+
+        <div class="profile-sidebar__logout-wrap">
+          <a href="logout.php" class="profile-logout">
+            <span class="p-ico p-ico--logout"></span>
+            <span>Keluar</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- KARTU PUTIH UTAMA -->
+      <div class="profile-card">
+
+        <!-- MODE BACA SAJA -->
+        {{#if is_view_mode}}
+        <div class="profile-card__head">
+          <h1 class="profile-card__title">Profil Saya</h1>
+          <p class="profile-card__desc">Kelola informasi profil Anda untuk mempermudah proses penyewaan alat outdoor.</p>
+        </div>
+
+        {{{alert_html}}}
+
+        <div class="profile-grid">
+          <div class="profile-fields">
+            <div class="profile-row">
+              <span class="profile-label">Username</span>
+              <span class="profile-value">{{username}}</span>
+            </div>
+            <div class="profile-row">
+              <span class="profile-label">Nama Lengkap</span>
+              <span class="profile-value">{{nama_lengkap}}</span>
+            </div>
+            <div class="profile-row">
+              <span class="profile-label">Email</span>
+              <span class="profile-value">{{email}}</span>
+            </div>
+            <div class="profile-row">
+              <span class="profile-label">Nomor WhatsApp</span>
+              <span class="profile-value">{{no_hp}}</span>
+            </div>
+            <div class="profile-row">
+              <span class="profile-label">Jenis Kelamin</span>
+              <span class="profile-value">{{jenis_kelamin_display}}</span>
+            </div>
+            <div class="profile-row">
+              <span class="profile-label">Tanggal Lahir</span>
+              <span class="profile-value">{{tanggal_lahir_display}}</span>
+            </div>
+            <div class="profile-row">
+              <span class="profile-label">Alamat Utama</span>
+              <span class="profile-value">{{alamat_display}}</span>
+            </div>
+
+            <div class="profile-actions">
+              <a href="profile.php?mode=edit" class="profile-btn profile-btn--primary">Edit Profil</a>
+            </div>
+          </div>
+
+          <div class="profile-vline"></div>
+
+          <div class="profile-avatar-col">
+            <div class="profile-avatar-circle">{{{big_avatar_html}}}</div>
+          </div>
+        </div>
+        {{/if}}
+
+        <!-- MODE EDIT PROFIL -->
+        {{#if is_edit_mode}}
+        <div class="profile-card__head">
+          <h1 class="profile-card__title">Profil Saya</h1>
+          <p class="profile-card__desc">Kelola informasi profil Anda untuk mempermudah proses penyewaan alat outdoor.</p>
+        </div>
+
+        {{{alert_html}}}
+
+        <form id="profile-edit-form" action="profile.php?mode=edit" method="post">
+          <div class="profile-grid">
+            <div class="profile-fields">
+              <input type="hidden" name="csrf" value="{{csrf}}" />
+              <input type="hidden" name="action" value="save_profile" />
+
+              <div class="profile-field">
+                <label for="prof-username">Username</label>
+                <input id="prof-username" type="text" name="username" value="{{username}}" title="Username" />
+              </div>
+
+              <div class="profile-field">
+                <label for="prof-nama">Nama Lengkap</label>
+                <input id="prof-nama" type="text" name="nama_lengkap" value="{{nama_lengkap}}" title="Nama Lengkap" />
+              </div>
+
+              <div class="profile-field">
+                <label for="prof-email">Email</label>
+                <input id="prof-email" type="text" name="email" value="{{email}}" title="Email" />
+              </div>
+
+              <div class="profile-field">
+                <label for="prof-hp">Nomor WhatsApp</label>
+                <input id="prof-hp" type="text" name="no_hp" value="{{no_hp}}" title="Nomor WhatsApp" />
+              </div>
+
+              <div class="profile-field">
+                <span class="profile-field__label">Jenis Kelamin</span>
+                <div class="profile-radios">{{{gender_radios_html}}}</div>
+              </div>
+
+              <div class="profile-field">
+                <label for="prof-tgl">Tanggal Lahir</label>
+                <input id="prof-tgl" type="date" name="tanggal_lahir" value="{{tanggal_lahir_raw}}" title="Tanggal Lahir" />
+              </div>
+
+              <div class="profile-field profile-field--top">
+                <label for="prof-alamat">Alamat Utama</label>
+                <textarea id="prof-alamat" name="alamat_default" rows="3" cols="35" title="Alamat Utama">{{alamat_raw}}</textarea>
+              </div>
+
+              <div class="profile-actions">
+                <button type="submit" class="profile-btn profile-btn--primary">Simpan Perubahan</button>
+                <a href="profile.php" class="profile-btn profile-btn--outline">Batal</a>
+              </div>
+            </div>
+
+            <div class="profile-vline"></div>
+
+            <div class="profile-avatar-col">
+              <div class="profile-avatar-circle">{{{big_avatar_html}}}</div>
+              <button type="button" id="open-avatar-modal" class="profile-btn profile-btn--outline profile-btn--photo">Ubah Foto</button>
+              <p class="profile-avatar-hint">Ukuran gambar: maks. 1 MB<br />Format gambar: .JPG, .PNG</p>
+            </div>
+          </div>
+        </form>
+        {{/if}}
+
+        <!-- TAB UBAH PASSWORD -->
+        {{#if is_password_tab}}
+        <div class="profile-card__head">
+          <h1 class="profile-card__title">Ubah Password</h1>
+          <p class="profile-card__desc">Untuk keamanan akun Anda, mohon untuk tidak menyebarkan password Anda ke orang lain.</p>
+        </div>
+
+        {{{alert_html}}}
+
+        <form action="profile.php?tab=password" method="post">
+          <div class="profile-fields profile-fields--narrow">
+            <input type="hidden" name="csrf" value="{{csrf}}" />
+            <input type="hidden" name="action" value="change_password" />
+
+            <div class="profile-field">
+              <label for="prof-curr-pass">Password Saat Ini</label>
+              <input id="prof-curr-pass" type="password" name="current_password" title="Password Saat Ini" />
+            </div>
+
+            <div class="profile-field">
+              <label for="prof-new-pass">Password Baru</label>
+              <input id="prof-new-pass" type="password" name="new_password" title="Password Baru" />
+            </div>
+
+            <div class="profile-field">
+              <label for="prof-conf-pass">Konfirmasi Password</label>
+              <input id="prof-conf-pass" type="password" name="confirm_password" title="Konfirmasi Password" />
+            </div>
+
+            <div class="profile-actions">
+              <button type="submit" class="profile-btn profile-btn--primary">Simpan Password</button>
+            </div>
+          </div>
+        </form>
+        {{/if}}
+
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL PILIH FOTO PROFIL -->
+  <div id="avatar-modal" class="avatar-modal">
+    <div class="avatar-modal__box">
+      <h2 class="avatar-modal__title">Pilih Foto Profil</h2>
+      <p class="avatar-modal__sub">Pilih gunakan inisial nama atau unggah foto profil baru.</p>
+
+      <form action="profile.php?mode=edit" method="post" enctype="multipart/form-data">
+        <div>
+          <input type="hidden" name="csrf" value="{{csrf}}" />
+          <input type="hidden" name="action" value="save_avatar" />
+          <input type="hidden" id="avatar-choice-input" name="avatar_choice" value="{{avatar_choice_val}}" />
+
+          <div class="avatar-cards">
+            <button type="button" class="{{initials_selected_cls}}" id="choice-initials">
+              <span class="avatar-choice__circle avatar-choice__circle--orange">{{user_initials}}</span>
+              <span class="avatar-choice__label">Gunakan Inisial</span>
+            </button>
+
+            <button type="button" class="{{photo_selected_cls}}" id="choice-photo">
+              <span class="avatar-choice__circle">{{{modal_photo_html}}}</span>
+              <span class="avatar-choice__label">Foto Profil</span>
+            </button>
+          </div>
+
+          <div class="avatar-dropzone">
+            <p class="avatar-dropzone__title">Unggah Foto Baru</p>
+            <p class="avatar-dropzone__sub">Ukuran gambar: maks. 1 MB · Format: .JPG, .PNG</p>
+            <input type="file" id="avatar-file-input" name="avatar_file" />
+            <p id="avatar-file-name" class="avatar-dropzone__file">Belum ada file dipilih</p>
+          </div>
+
+          <div class="avatar-modal__actions">
+            <button type="button" id="close-avatar-modal" class="profile-btn profile-btn--outline">Batal</button>
+            <button type="submit" class="profile-btn profile-btn--primary">Simpan Foto</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
