@@ -83,6 +83,9 @@ function menu_url($slug)
     if ($slug == '/products') {
         return 'product.php';
     }
+    if ($slug == '/support') {
+        return 'support.php';
+    }
     return '#';     // pages that do not exist yet
 }
 
