@@ -368,6 +368,33 @@ function flash_pull()
     return $flash;
 }
 
+function current_user_profile()
+{
+    if (!is_logged_in()) {
+        return null;
+    }
+
+    return db_query(
+        'SELECT id_user, nama_lengkap, username, email, no_hp, role, alamat_default, foto_profil, created_at
+         FROM users
+         WHERE id_user = ?
+         LIMIT 1',
+        [current_user_id()]
+    )->fetch();
+}
+
+function avatar_path($foto_profil)
+{
+    $val = trim((string) $foto_profil);
+    if ($val === '') {
+        return '';
+    }
+    if (strpos($val, 'Images/') === 0) {
+        return $val;
+    }
+    return img_path($val);
+}
+
 /* ---------- Print small pieces of the page ---------- */
 // These functions just load a small template file. The variables used by the
 // file (like $p) are the function's own variables, so the file can see them.
